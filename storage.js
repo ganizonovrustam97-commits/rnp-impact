@@ -123,32 +123,32 @@ const StorageModule = {
         if (key === 'rnp_users') collectionName = this.KEYS.USERS;
 
         // 2. Отправка в Firestore
-        if (window.FirebaseConfig?.db) {
-            console.log(`📤 Attempting to sync [${collectionName}] to Cloud...`);
+        if (window.FirebaseConfig && window.FirebaseConfig.db) {
+            console.log(`📤 SYNC: Attempting to save [${collectionName}]...`, value);
             const db = window.FirebaseConfig.db;
 
             try {
                 if (Array.isArray(value)) {
-                    // Синхронизируем каждый элемент как отдельный документ
+                    if (value.length === 0) {
+                        console.log(`ℹ️ [${collectionName}] list empty, nothing to sync.`);
+                        return true;
+                    }
                     const promises = value.map(item => {
                         const docId = String(item.id || item._docId || db.collection(collectionName).doc().id);
                         const { _docId, ...dataToSave } = item;
                         return db.collection(collectionName).doc(docId).set(dataToSave, { merge: true });
                     });
-
                     await Promise.all(promises);
-                    console.log(`✅ [${collectionName}] successfully synced to Cloud`);
+                    console.log(`✅ SYNC: Cloud updated [${collectionName}]`);
                 } else if (key === 'rnp_last_month') {
                     await db.collection(this.KEYS.LAST_MONTH_MARKER).doc('config').set({ lastMonthMarker: value });
-                    console.log(`✅ System settings synced to Cloud`);
+                    console.log(`✅ SYNC: Cloud updated settings`);
                 }
             } catch (e) {
-                console.error(`❌ Firestore Sync Error [${collectionName}]:`, e);
-                // Показываем алерт для отладки
-                alert("Ошибка синхронизации с облаком. Проверьте консоль.");
+                console.error(`❌ SYNC ERROR [${collectionName}]:`, e.message);
             }
         } else {
-            console.warn("⚠️ Firebase DB not initialized. Data saved only locally.");
+            console.warn("⚠️ SYNC DISABLED: Firestore not initialized. Check firebase-config.js");
         }
         return true;
     },
