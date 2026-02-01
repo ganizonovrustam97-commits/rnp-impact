@@ -1,0 +1,93 @@
+/* History Cards Enhancements */
+.history-card.full-data-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.history-card.full-data-card .history-detailed-content {
+    display: none;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #eee;
+}
+
+.history-card.full-data-card.expanded .history-detailed-content {
+    display: block;
+}
+
+.history-base-summary {
+    background: #fcfcfc;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #f0f0f0;
+}
+
+.mini-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.mini-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mini-stat span {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mini-stat strong {
+    font-size: 1rem;
+    color: var(--dark-color);
+}
+
+.history-card-footer {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #aaa;
+    text-align: right;
+}
+
+.archived-employee-section {
+    margin-bottom: 2rem;
+}
+
+.archived-employee-section h4 {
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.25rem;
+}
+
+details summary {
+    cursor: pointer;
+    font-weight: 500;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+}
+
+details summary:hover {
+    background: #eef1f4;
+}
+
+details summary::before {
+    content: '▶';
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+}
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
