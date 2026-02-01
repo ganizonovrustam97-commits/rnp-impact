@@ -109,14 +109,11 @@ const StorageModule = {
     // === WRITERS (CLOUD + LOCAL) ===
 
     async set(key, value) {
-        // 1. Оптимистичное обновление локально (чтобы интерфейс не тупил)
-        let localKey = key;
-        if (key === this.KEYS.MANAGERS) localKey = 'rnp_managers'; // mapping back for old code if needed? 
-        // Нет, лучше переведем весь app.js на новые ключи или сделаем маппинг внутри get/set.
-        // Для простоты: пишем и по старому ключу (для app.js) и в коллекцию.
+        // 1. Оптимистичное обновление локально
+        localStorage.setItem(key, JSON.stringify(value));
 
         let collectionName = key;
-        // Маппинг "Старый ключ" -> "Коллекция"
+        // Маппинг ключей на коллекции
         if (key === 'rnp_managers') collectionName = this.KEYS.MANAGERS;
         if (key === 'rnp_experts') collectionName = this.KEYS.EXPERTS;
         if (key === 'rnp_manager_reports') collectionName = this.KEYS.MANAGER_REPORTS;
@@ -125,40 +122,33 @@ const StorageModule = {
         if (key === 'rnp_history') collectionName = this.KEYS.HISTORY;
         if (key === 'rnp_users') collectionName = this.KEYS.USERS;
 
-        // Сохраняем локально (старый ключ)
-        localStorage.setItem(key, JSON.stringify(value));
-
         // 2. Отправка в Firestore
         if (window.FirebaseConfig?.db) {
+            console.log(`📤 Attempting to sync [${collectionName}] to Cloud...`);
             const db = window.FirebaseConfig.db;
 
-            if (Array.isArray(value)) {
-                // Если это массив (например список менеджеров), 
-                // Firestore не умеет хранить "просто массив" как коллекцию.
-                // Нам нужно синхронизировать документы.
+            try {
+                if (Array.isArray(value)) {
+                    // Синхронизируем каждый элемент как отдельный документ
+                    const promises = value.map(item => {
+                        const docId = String(item.id || item._docId || db.collection(collectionName).doc().id);
+                        const { _docId, ...dataToSave } = item;
+                        return db.collection(collectionName).doc(docId).set(dataToSave, { merge: true });
+                    });
 
-                // СТРАТЕГИЯ:
-                // Мы сохраняем каждый элемент массива как отдельный документ в коллекции.
-                // ID документа = item.id (если есть) или автогенерируемый.
-
-                const batch = db.batch();
-                value.forEach(item => {
-                    const docId = item.id || item._docId || db.collection(collectionName).doc().id;
-                    const docRef = db.collection(collectionName).doc(String(docId));
-                    // Убираем _docId перед записью, чтобы не дублировать
-                    const { _docId, ...dataToSave } = item;
-                    batch.set(docRef, dataToSave, { merge: true });
-                });
-
-                // Внимание: Это не удаляет старые документы, которых нет в новом массиве (удаление сложнее).
-                // Для MVP просто "дописываем/обновляем".
-                batch.commit().catch(e => console.error("Firestore Save Error:", e));
-            } else {
-                // Одиночное значение (настройки)
-                if (key === 'rnp_last_month') {
-                    db.collection(this.KEYS.LAST_MONTH_MARKER).doc('config').set({ lastMonthMarker: value });
+                    await Promise.all(promises);
+                    console.log(`✅ [${collectionName}] successfully synced to Cloud`);
+                } else if (key === 'rnp_last_month') {
+                    await db.collection(this.KEYS.LAST_MONTH_MARKER).doc('config').set({ lastMonthMarker: value });
+                    console.log(`✅ System settings synced to Cloud`);
                 }
+            } catch (e) {
+                console.error(`❌ Firestore Sync Error [${collectionName}]:`, e);
+                // Показываем алерт для отладки
+                alert("Ошибка синхронизации с облаком. Проверьте консоль.");
             }
+        } else {
+            console.warn("⚠️ Firebase DB not initialized. Data saved only locally.");
         }
         return true;
     },
