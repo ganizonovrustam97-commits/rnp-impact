@@ -7,13 +7,13 @@
 // (compat версия)
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBlbQQ_athNeDrRCAMjVavLlW6MQEeh1c0",
-    authDomain: "rnp-impact.firebaseapp.com",
-    projectId: "rnp-impact",
-    storageBucket: "rnp-impact.firebasestorage.app",
-    messagingSenderId: "89805533431",
-    appId: "1:89805533431:web:85fd9fe535e85674ac23f2",
-    measurementId: "G-DJVDNE7BPB"
+    apiKey: "AIzaSyA15pwZj10k0tvjK0s5Poly_0TEmJGBMeQ",
+    authDomain: "rustam-21c98.firebaseapp.com",
+    projectId: "rustam-21c98",
+    storageBucket: "rustam-21c98.firebasestorage.app",
+    messagingSenderId: "566986718548",
+    appId: "1:566986718548:web:2f736a3fd72b0510771cc1",
+    measurementId: "G-W3GSS00CDM"
 };
 
 let db;
