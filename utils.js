@@ -77,16 +77,24 @@ const Utils = {
      * Валидация числа (не отрицательное)
      */
     validatePositiveNumber(value, defaultValue = 0) {
-        const num = parseInt(value) || defaultValue;
-        return Math.max(0, num);
+        if (typeof value === 'string') {
+            // Удаляем пробелы и все нецифровые символы кроме минуса (для парсинга)
+            value = value.replace(/\s/g, '').replace(/[^\d.,-]/g, '').replace(',', '.');
+        }
+        const num = parseInt(value);
+        return isNaN(num) ? defaultValue : Math.max(0, num);
     },
 
     /**
      * Валидация числа с плавающей точкой
      */
     validatePositiveFloat(value, defaultValue = 0) {
-        const num = parseFloat(value) || defaultValue;
-        return Math.max(0, num);
+        if (typeof value === 'string') {
+            // Очищаем строку для корректного parseFloat
+            value = value.replace(/\s/g, '').replace(/[^\d.,-]/g, '').replace(',', '.');
+        }
+        const num = parseFloat(value);
+        return isNaN(num) ? defaultValue : Math.max(0, num);
     },
 
     /**

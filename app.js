@@ -1419,5 +1419,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // UX: Обработка вставки (Paste) для очистки данных от мусора (пробелы, символы валют)
+    document.addEventListener('paste', (e) => {
+        if (e.target.classList.contains('table-input') && e.target.type === 'number') {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            // Очищаем: убираем всё кроме цифр, точек и запятых
+            const cleaned = text.replace(/\s/g, '').replace(/[^\d.,-]/g, '').replace(',', '.');
+            if (cleaned !== '') {
+                e.target.value = cleaned;
+                // Триггерим событие изменения, чтобы сработал saveCell...
+                e.target.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+    });
 });
+
 
