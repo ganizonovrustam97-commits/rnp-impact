@@ -19,12 +19,16 @@ const HistoryModule = {
         historyList.innerHTML = '<div class="archive-grid">' + history.slice().reverse().map(item => {
             const stats = item.stats;
             const isOld = !stats.rawData;
+            const isAdmin = typeof AuthModule !== 'undefined' && AuthModule.isAdmin();
 
             return `
                 <div class="history-card ${isOld ? 'old-format' : 'interactive'}" onclick="${isOld ? '' : `HistoryModule.loadArchiveView('${item.id}')`}">
                     <div class="history-card-header">
                         <h3>${item.month}</h3>
-                        ${isOld ? '<span class="badge badge-secondary">Старый формат</span>' : '<span class="badge badge-success">Просмотр</span>'}
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            ${isOld ? '<span class="badge badge-secondary">Старый формат</span>' : '<span class="badge badge-success">Просмотр</span>'}
+                            ${isAdmin ? `<button class="btn-icon" onclick="event.stopPropagation(); HistoryModule.deleteArchiveItem('${item.id}')" title="Удалить архив">🗑️</button>` : ''}
+                        </div>
                     </div>
                     
                     <div class="mini-stats-grid" style="margin-top: 10px;">
@@ -104,26 +108,68 @@ const HistoryModule = {
         const index = history.findIndex(h => h.id === window.AppState.currentArchiveId);
 
         if (index !== -1) {
-            // Обновляем rawData внутри истории текущими данными из AppState
-            // Так как объекты передаются по ссылке, AppState.archiveData уже содержит изменения,
-            // но нам нужно явно обновить структуру stats и сохранить в LocalStorage.
+            // 1. Вычисляем даты по метке месяца
+            let startDate, endDate;
+            const label = history[index].month;
+            const parts = label.split(' ');
+            if (parts.length === 2) {
+                const monthNames = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+                    'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+                const mIndex = monthNames.findIndex(m => m.toLowerCase().startsWith(parts[0].toLowerCase()));
+                const year = parseInt(parts[1]);
+                if (mIndex !== -1 && !isNaN(year)) {
+                    startDate = `${year}-${String(mIndex + 1).padStart(2, '0')}-01`;
+                    const lastDay = new Date(year, mIndex + 1, 0).getDate();
+                    endDate = `${year}-${String(mIndex + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+                }
+            }
 
-            // Важно: пересчитываем общие метрики (totalRevenue и т.д.), чтобы в списке истории цифры обновились
-            // Для этого нам нужны startDate/endDate этого архива.
-            // Мы можем их вычислить так же, как в loadArchiveState
+            if (!startDate) return;
 
-            // Но для простоты редактирования отдельных ячеек, мы пока просто сохраняем rawData.
-            // (Полный пересчет stats требует дублирования логики из archiveCurrentMonth).
+            // 2. Пересчитываем статистику на основе измененных rawData
+            // Так как мы в ArchiveMode, модули будут брать данные из AppState.archiveData
+            const mStats = ManagersModule.getAllManagersStats(startDate, endDate);
+            const eStats = ExpertsModule.getAllExpertsStats(startDate, endDate);
+            const marketingStats = MarketingModule.calculateMetrics(startDate, endDate);
 
-            // Чтобы "обмануть" систему и обновить превью:
-            // Можно просто сохранить rawData.
+            const totalRevenue = eStats.reduce((sum, e) => sum + (e.totalRevenue || 0), 0);
+            const totalSales = eStats.reduce((sum, e) => sum + (e.totalDeals || 0), 0);
 
-            history[index].stats.rawData = window.AppState.archiveData;
+            // 3. Обновляем объект истории
+            history[index].stats = {
+                totalRevenue,
+                totalSales,
+                totalManagers: mStats.length,
+                totalExperts: eStats.length,
+                mStats,
+                eStats,
+                marketing: marketingStats,
+                rawData: window.AppState.archiveData
+            };
 
-            // Синхронизируем изменения с постоянным хранилищем
+            // 4. Синхронизируем
             StorageModule.set(StorageModule.KEYS.HISTORY, history);
-            console.log('Archive data updated');
+            console.log('Archive data and stats updated for:', label);
         }
+    },
+
+    /**
+     * Удаление записи из истории
+     */
+    deleteArchiveItem(id) {
+        if (!confirm('Вы уверены, что хотите безвозвратно удалить этот архивный месяц?')) return;
+
+        let history = StorageModule.getHistory();
+        history = history.filter(h => h.id !== id);
+
+        StorageModule.set(StorageModule.KEYS.HISTORY, history);
+
+        if (window.FirebaseConfig?.db) {
+            window.FirebaseConfig.db.collection(StorageModule.KEYS.HISTORY).doc(String(id)).delete();
+        }
+
+        this.renderHistoryView();
+        Utils.showNotification('Архив удален', 'success');
     },
 
     /**
