@@ -27,6 +27,8 @@ const MarketingModule = {
         // Выручка в USD (для маркетинга)
         const revenueUSD = dayExperts.reduce((sum, e) => sum + (parseFloat(e.amountUSD) || parseFloat(e.amountUsd) || 0), 0);
 
+        const offers = dayExperts.reduce((sum, e) => sum + (parseInt(e.offers) || 0), 0);
+
         return {
             date,
             expenses: parseFloat(mReport.expenses) || 0,
@@ -34,7 +36,7 @@ const MarketingModule = {
             clicks: parseInt(mReport.clicks) || 0,
             leads: parseInt(mReport.leads) || 0,
             qualLeads: parseInt(mReport.qualLeads) || 0,
-            offers: parseInt(mReport.offers) || 0,
+            offers,
             appointments,
             conducted,
             sales,

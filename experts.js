@@ -23,6 +23,7 @@ const ExpertsModule = {
 
         const conductedMeetings = sales.reduce((sum, s) => sum + (parseInt(s.conductedMeetings) || 0), 0);
         const totalDeals = sales.reduce((sum, s) => sum + (parseInt(s.dealsCount) || 0), 0);
+        const totalOffers = sales.reduce((sum, s) => sum + (parseInt(s.offers) || 0), 0);
 
         // ВЫРУЧКА: Используем amount (Сумы) и amountUSD (USD) с защитой от NaN
         const totalRevenue = sales.reduce((sum, s) => {
@@ -46,6 +47,7 @@ const ExpertsModule = {
             totalDeals,
             totalRevenue, // Сумы
             totalRevenueUsd, // Доллары
+            totalOffers,
             monthPlan: expert.monthPlan,
             planPercent,
             sales
@@ -132,6 +134,7 @@ const ExpertsModule = {
                 expertName: expert.name,
                 conductedMeetings: metrics.conductedMeetings,
                 totalDeals: metrics.totalDeals,
+                totalOffers: metrics.totalOffers,
                 totalRevenue: metrics.totalRevenue, // Сумы
                 totalRevenueUsd: metrics.totalRevenueUsd, // USD
                 planPercent: metrics.planPercent,

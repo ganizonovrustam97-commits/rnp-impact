@@ -597,6 +597,7 @@ function renderExpertInputTable() {
                         <tr>
                             <th>Дата</th>
                             <th>Пров.</th>
+                            <th>Оффер</th>
                             <th>Прод.</th>
                             <th>Выручка (сум)</th>
                             <th>Выручка (USD)</th>
@@ -668,6 +669,7 @@ function generateExpertRows(expertId, days, allSales) {
                 <tr style="${rowStyle}">
                     <td>${i} ${date.toLocaleString('ru-RU', { month: 'short' })}</td>
                     <td>${s.conductedMeetings || 0}</td>
+                    <td>${s.offers || 0}</td>
                     <td>${s.dealsCount || 0}</td>
                     <td>${formatCurrency(s.amount || s.amountSum || 0)}</td>
                     <td>${s.amountUSD || s.amountUsd ? formatUSD(s.amountUSD || s.amountUsd) : '-'}</td>
@@ -679,6 +681,7 @@ function generateExpertRows(expertId, days, allSales) {
                 <tr style="${rowStyle}">
                     <td>${i} ${date.toLocaleString('ru-RU', { month: 'short' })}</td>
                     <td><input type="number" class="table-input" min="0" value="${s.conductedMeetings || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'conductedMeetings', this.value)"></td>
+                    <td><input type="number" class="table-input" min="0" value="${s.offers || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'offers', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" value="${s.dealsCount || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'dealsCount', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" step="0.01" value="${s.amount || s.amountSum || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'amount', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" step="0.01" value="${s.amountUSD || s.amountUsd || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'amountUSD', this.value)"></td>
@@ -697,7 +700,7 @@ window.saveCellExpert = function (expertId, date, field, value) {
     let index = sales.findIndex(s => s.expertId === expertId && s.date === date);
 
     if (index === -1) {
-        const newS = { expertId, date, conductedMeetings: 0, dealsCount: 0, amount: 0, amountUSD: 0, discipline: false };
+        const newS = { expertId, date, conductedMeetings: 0, offers: 0, dealsCount: 0, amount: 0, amountUSD: 0, discipline: false };
         newS[field] = field === 'discipline' ? value : (field === 'amount' || field === 'amountUSD' ? Utils.validatePositiveFloat(value) : Utils.validatePositiveNumber(value));
         sales.push(newS);
     } else {
@@ -739,7 +742,8 @@ function renderExpertsView() {
                     <div class="stats-grid-small">
                         <div><p class="label">Выручка</p><p class="val">${formatCurrency(stat.totalRevenue)}</p></div>
                         <div><p class="label">План</p><p class="val">${stat.planPercent}%</p></div>
-                        <div><p class="label">CR Пр→Пд</p><p class="val">${stat.conversionConductedToSale}%</p></div>
+                        <div><p class="label">Пров→Офф</p><p class="val">${(stat.totalOffers / (stat.conductedMeetings || 1) * 100).toFixed(1)}%</p></div>
+                        <div><p class="label">Офф→Прд</p><p class="val">${(stat.totalDeals / (stat.totalOffers || 1) * 100).toFixed(1)}%</p></div>
                         <div><p class="label">Комиссия (${(salary.commissionRate * 100).toFixed(0)}%)</p><p class="val">${formatCurrency(salary.commission)}</p></div>
                         <div><p class="label">Фикс+Дисц</p><p class="val">${formatCurrency(salary.baseFix)}</p></div>
                         <div><p class="label">Лучший месяца</p><p class="val">${formatCurrency(salary.bestMonthBonus)}</p></div>
@@ -768,13 +772,13 @@ function renderExpertHistory() {
     const experts = Utils.getAppData('experts');
 
     if (sales.length === 0) {
-        tbody.innerHTML = '<tr class="no-data"><td colspan="4">Нет данных</td></tr>';
+        tbody.innerHTML = '<tr class="no-data"><td colspan="5">Нет данных</td></tr>';
         return;
     }
 
     tbody.innerHTML = sales.map(s => {
         const e = experts.find(ex => ex.id === s.expertId);
-        return `<tr><td>${formatDate(s.date)}</td><td>${e ? e.name : '?'}</td><td>${formatCurrency(s.amount || s.amountSum || 0)}</td><td>${s.discipline ? '✅' : '❌'}</td></tr>`;
+        return `<tr><td>${formatDate(s.date)}</td><td>${e ? e.name : '?'}</td><td>${s.offers || 0}</td><td>${formatCurrency(s.amount || s.amountSum || 0)}</td><td>${s.discipline ? '✅' : '❌'}</td></tr>`;
     }).join('');
 }
 
@@ -865,7 +869,7 @@ function renderMarketingInputTable() {
                 <td><input type="number" class="table-input" min="0" value="${r.leads || 0}" onchange="saveCellMarketing('${dateStr}', 'leads', this.value)"></td>
                 <td><input type="number" class="table-input" value="${r.appointments || 0}" readonly style="background:rgba(0,0,0,0.1)" title="Синхронно из Менеджеров"></td>
                 <td><input type="number" class="table-input" value="${r.conducted || 0}" readonly style="background:rgba(0,0,0,0.1)" title="Синхронно из Менеджеров"></td>
-                <td><input type="number" class="table-input" min="0" value="${r.offers || 0}" onchange="saveCellMarketing('${dateStr}', 'offers', this.value)"></td>
+                <td><input type="number" class="table-input" value="${r.offers || 0}" readonly style="background:rgba(0,0,0,0.1)" title="Синхронно из Экспертов"></td>
                 <td><input type="number" class="table-input" value="${r.sales}" readonly style="background:rgba(0,0,0,0.1)" title="Синхронно из Экспертов"></td>
                 <td><input type="number" class="table-input" value="${r.revenueUSD}" readonly style="background:rgba(0,0,0,0.1)" title="Синхронно из Экспертов"></td>
                 <td style="font-weight:bold; color: ${dailyROMI > 0 ? 'var(--accent-success)' : 'var(--accent-danger)'}">${dailyROMI}%</td>
