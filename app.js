@@ -1401,4 +1401,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const marketerForm = document.getElementById('add-marketer-form');
     if (marketerForm) marketerForm.addEventListener('submit', window.handleAddMarketer);
+
+    // UX: Автоматическая очистка "0" при нажатии на ячейку ввода
+    document.addEventListener('focusin', (e) => {
+        if (e.target.classList.contains('table-input') && (e.target.type === 'number' || e.target.type === 'text')) {
+            if (e.target.value === '0' || e.target.value === '0.00') {
+                e.target.value = '';
+            }
+        }
+    });
+
+    // Возвращаем "0" если пользователь ничего не ввел и ушел из ячейки
+    document.addEventListener('focusout', (e) => {
+        if (e.target.classList.contains('table-input') && e.target.type === 'number') {
+            if (e.target.value === '') {
+                e.target.value = '0';
+            }
+        }
+    });
 });
+
