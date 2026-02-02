@@ -201,6 +201,31 @@
                             <p class="text-muted">Загрузка данных...</p>
                         </div>
                     </div>
+
+                    <!-- Marketing Specialists Salary -->
+                    <div class="section">
+                        <h3 class="section-title">💰 Зарплаты маркетологов (Target)</h3>
+                        <div class="table-container">
+                            <table class="data-table" id="marketers-salary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Маркетолог</th>
+                                        <th>Фикса ($)</th>
+                                        <th>ROI (%)</th>
+                                        <th>Бюджет ($)</th>
+                                        <th>% Бонуса</th>
+                                        <th>Бонус ($)</th>
+                                        <th>ИТОГО ЗП ($)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="no-data">
+                                        <td colspan="7">Нет данных</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Managers View -->
@@ -345,6 +370,18 @@
                                 <button type="submit" class="btn btn-success">Добавить</button>
                             </form>
                         </div>
+
+                        <!-- Add Marketer -->
+                        <div class="section">
+                            <h3 class="section-title">🎯 Добавить маркетолога</h3>
+                            <form id="add-marketer-form" class="input-form">
+                                <div class="form-group">
+                                    <label for="new-marketer-name">Имя маркетолога</label>
+                                    <input type="text" id="new-marketer-name" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Добавить</button>
+                            </form>
+                        </div>
                     </div>
 
                     <!-- Current Users -->
@@ -358,6 +395,10 @@
                             <div class="user-list">
                                 <h4>Эксперты</h4>
                                 <ul id="experts-list"></ul>
+                            </div>
+                            <div class="user-list">
+                                <h4>Маркетологи</h4>
+                                <ul id="marketers-list"></ul>
                             </div>
                         </div>
                     </div>
@@ -420,6 +461,7 @@
     <script src="utils.js"></script>
     <script src="auth.js"></script>
     <script src="marketing.js"></script>
+    <script src="marketers.js"></script>
     <script src="managers.js"></script>
     <script src="experts.js"></script>
     <script src="history.js"></script>

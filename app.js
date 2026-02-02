@@ -895,6 +895,32 @@ function renderMarketingView() {
     `;
 
     renderMarketingInputTable();
+    renderMarketersSalary();
+}
+
+function renderMarketersSalary() {
+    const tbody = document.querySelector('#marketers-salary-table tbody');
+    if (!tbody) return;
+
+    const { startDate, endDate } = Utils.loadCurrentMonthData();
+    const stats = MarketersModule.getAllMarketersStats(startDate, endDate);
+
+    if (stats.length === 0) {
+        tbody.innerHTML = '<tr class="no-data"><td colspan="7">Нет данных</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = stats.map(s => `
+        <tr>
+            <td>${s.name}</td>
+            <td>$${s.baseFix}</td>
+            <td>${s.roi.toFixed(1)}%</td>
+            <td>$${s.budget.toLocaleString()}</td>
+            <td>${s.bonusPercent}%</td>
+            <td>$${s.bonusAmount.toFixed(2)}</td>
+            <td style="font-weight:bold; color:var(--accent-success)">$${s.totalSalary.toFixed(2)}</td>
+        </tr>
+    `).join('');
 }
 
 function renderMarketingInputTable() {
@@ -1040,6 +1066,18 @@ function renderSettingsView() {
         `).join('') || '<li class="text-muted">Нет сотрудников</li>';
     }
 
+    if (marketersList) {
+        marketersList.innerHTML = StorageModule.getMarketers().map(m => `
+            <li class="user-item">
+                <span>${m.name} (Фикс: $${m.baseFix || 200})</span>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn btn-sm btn-secondary" onclick="window.openEditModal('${m.id}', 'marketer')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.deleteMarketer('${m.id}')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>🗑️</button>
+                </div>
+            </li>
+        `).join('') || '<li class="text-muted">Нет сотрудников</li>';
+    }
+
     // Обработчики кнопок управления данными
     const archiveBtn = document.getElementById('archive-month-btn');
     const clearBtn = document.getElementById('clear-all-btn');
@@ -1168,9 +1206,18 @@ window.deleteExpert = function (id) {
     if (window.AppState.isArchiveMode) return;
     if (!confirm('Удалить эксперта?')) return;
     StorageModule.deleteExpert(id);
-    AuthModule.deleteUserForEmployee(id); // Удаляем пользователя
+    AuthModule.deleteUserForEmployee(id);
     renderSettingsView();
     renderDashboard();
+};
+
+window.deleteMarketer = function (id) {
+    if (window.AppState.isArchiveMode) return;
+    if (!confirm('Удалить маркетолога?')) return;
+    StorageModule.deleteMarketer(id);
+    AuthModule.deleteUserForEmployee(id);
+    renderSettingsView();
+    renderMarketingView();
 };
 
 window.handleAddManager = function (e) {
@@ -1217,12 +1264,34 @@ window.handleAddExpert = function (e) {
         monthPlan: Utils.validatePositiveNumber(plan)
     });
 
-    // Создаем пользователя для нового эксперта
     AuthModule.createUserForEmployee(name, newExpert.id, 'expert');
 
     e.target.reset();
     renderSettingsView();
     Utils.showNotification('Эксперт добавлен', 'success');
+};
+
+window.handleAddMarketer = function (e) {
+    e.preventDefault();
+    if (window.AppState.isArchiveMode) return;
+
+    const name = document.getElementById('new-marketer-name').value.trim();
+
+    if (!name) {
+        Utils.showNotification('Введите имя маркетолога', 'error');
+        return;
+    }
+
+    const newMarketer = StorageModule.addMarketer({
+        name,
+        baseFix: 200
+    });
+
+    AuthModule.createUserForEmployee(name, newMarketer.id, 'marketer');
+
+    e.target.reset();
+    renderSettingsView();
+    Utils.showNotification('Маркетолог добавлен', 'success');
 };
 
 window.updateManagerPlan = function (id, val) {
@@ -1256,20 +1325,32 @@ window.openEditModal = function (id, type) {
     const typeInput = document.getElementById('edit-user-type');
     const title = document.getElementById('edit-modal-title');
 
+    const planLabel = planInput.parentElement.querySelector('label');
+
+    // Сброс базовых настроек вида модалки
+    planLabel.textContent = 'Месячный план (или Фикса):';
+    planInput.parentElement.style.display = 'block';
+
     let user;
     if (type === 'manager') {
         user = StorageModule.getManagers().find(m => m.id == id);
         title.textContent = 'Редактировать SDR менеджера';
-    } else {
+        planInput.value = user.monthPlan || 0;
+    } else if (type === 'expert') {
         user = StorageModule.getExperts().find(e => e.id == id);
         title.textContent = 'Редактировать эксперта';
+        planInput.value = user.monthPlan || 0;
+    } else if (type === 'marketer') {
+        user = StorageModule.getMarketers().find(m => m.id == id);
+        title.textContent = 'Редактировать маркетолога';
+        planLabel.textContent = 'Фикса ($):';
+        planInput.value = user.baseFix || 200;
     }
 
     if (user) {
         idInput.value = id;
         typeInput.value = type;
         nameInput.value = user.name;
-        planInput.value = user.monthPlan || 0;
         modal.style.display = 'flex';
     }
 };
@@ -1291,8 +1372,10 @@ window.handleEditUser = function (e) {
     let success = false;
     if (type === 'manager') {
         success = StorageModule.updateManager(id, { name, monthPlan: plan });
-    } else {
+    } else if (type === 'expert') {
         success = StorageModule.updateExpert(id, { name, monthPlan: plan });
+    } else if (type === 'marketer') {
+        success = StorageModule.updateMarketer(id, { name, baseFix: plan });
     }
 
     if (success) {
@@ -1308,8 +1391,14 @@ window.handleEditUser = function (e) {
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', () => {
     const editForm = document.getElementById('edit-user-form');
-    if (editForm) {
-        editForm.addEventListener('submit', window.handleEditUser);
-    }
-});
+    if (editForm) editForm.addEventListener('submit', window.handleEditUser);
 
+    const managerForm = document.getElementById('add-manager-form');
+    if (managerForm) managerForm.addEventListener('submit', window.handleAddManager);
+
+    const expertForm = document.getElementById('add-expert-form');
+    if (expertForm) expertForm.addEventListener('submit', window.handleAddExpert);
+
+    const marketerForm = document.getElementById('add-marketer-form');
+    if (marketerForm) marketerForm.addEventListener('submit', window.handleAddMarketer);
+});

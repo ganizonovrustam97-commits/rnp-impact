@@ -15,6 +15,7 @@ const StorageModule = {
         MARKETING_REPORTS: 'marketingReports',
         HISTORY: 'history',
         USERS: 'users',
+        MARKETERS: 'marketers',
         LAST_MONTH_MARKER: 'system_settings' // Храним отдельно
     },
 
@@ -38,7 +39,8 @@ const StorageModule = {
             this.KEYS.EXPERT_SALES,
             this.KEYS.MARKETING_REPORTS,
             this.KEYS.HISTORY,
-            this.KEYS.USERS
+            this.KEYS.USERS,
+            this.KEYS.MARKETERS
         ];
 
         collections.forEach(collectionName => {
@@ -93,6 +95,7 @@ const StorageModule = {
             if (key === 'rnp_marketing_reports') key = this.KEYS.MARKETING_REPORTS;
             if (key === 'rnp_history') key = this.KEYS.HISTORY;
             if (key === 'rnp_users') key = this.KEYS.USERS;
+            if (key === 'rnp_marketers') key = this.KEYS.MARKETERS;
 
             const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : null;
@@ -121,6 +124,7 @@ const StorageModule = {
         if (key === 'rnp_marketing_reports') collectionName = this.KEYS.MARKETING_REPORTS;
         if (key === 'rnp_history') collectionName = this.KEYS.HISTORY;
         if (key === 'rnp_users') collectionName = this.KEYS.USERS;
+        if (key === 'rnp_marketers') collectionName = this.KEYS.MARKETERS;
 
         // 2. Отправка в Firestore
         if (window.FirebaseConfig && window.FirebaseConfig.db) {
@@ -173,7 +177,8 @@ const StorageModule = {
             { old: 'rnp_expert_sales', new: this.KEYS.EXPERT_SALES, val: [] },
             { old: 'rnp_marketing_reports', new: this.KEYS.MARKETING_REPORTS, val: [] },
             { old: 'rnp_history', new: this.KEYS.HISTORY, val: [] },
-            { old: 'rnp_users', new: this.KEYS.USERS, val: [] }
+            { old: 'rnp_users', new: this.KEYS.USERS, val: [] },
+            { old: 'rnp_marketers', new: this.KEYS.MARKETERS, val: [] }
         ];
 
         defaults.forEach(d => {
@@ -193,6 +198,11 @@ const StorageModule = {
     getExperts() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.experts || [];
         return this.get('rnp_experts') || [];
+    },
+
+    getMarketers() {
+        if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.marketers || [];
+        return this.get('rnp_marketers') || [];
     },
 
     getManagerReports() {
@@ -280,6 +290,37 @@ const StorageModule = {
         this.set('rnp_experts', list);
         if (window.FirebaseConfig?.db) {
             window.FirebaseConfig.db.collection(this.KEYS.EXPERTS).doc(String(id)).delete();
+        }
+        return true;
+    },
+
+    // Маркетологи
+    addMarketer(marketer) {
+        const list = this.getMarketers();
+        marketer.id = marketer.id || 'mark' + Date.now();
+        list.push(marketer);
+        this.set('rnp_marketers', list);
+        return marketer;
+    },
+    updateMarketer(id, updates) {
+        const list = this.getMarketers();
+        const idx = list.findIndex(m => m.id == id);
+        if (idx !== -1) {
+            list[idx] = { ...list[idx], ...updates };
+            this.set('rnp_marketers', list);
+            if (window.FirebaseConfig?.db) {
+                window.FirebaseConfig.db.collection(this.KEYS.MARKETERS).doc(String(id)).update(updates);
+            }
+            return true;
+        }
+        return false;
+    },
+    deleteMarketer(id) {
+        let list = this.getMarketers();
+        list = list.filter(m => m.id !== id);
+        this.set('rnp_marketers', list);
+        if (window.FirebaseConfig?.db) {
+            window.FirebaseConfig.db.collection(this.KEYS.MARKETERS).doc(String(id)).delete();
         }
         return true;
     },
