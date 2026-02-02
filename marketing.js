@@ -54,11 +54,8 @@ const MarketingModule = {
         const end = new Date(endDate);
         const reports = [];
 
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            // Используем ISO строку, так как loadCurrentMonthData возвращает YYYY-MM-DD
-            // И new Date("YYYY-MM-DD") создает UTC полночь.
-            // Но чтобы не зависеть от таймзон, лучше просто брать split('T')[0] от UTC
-            const dateStr = d.toISOString().split('T')[0];
+        for (let i = 1; i <= end.getDate(); i++) {
+            const dateStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             reports.push(this.getSyncedDailyData(dateStr));
         }
 

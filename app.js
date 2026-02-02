@@ -981,7 +981,7 @@ window.renderDashboard = function renderDashboard() {
     const mStats = ManagersModule.getAllManagersStats(startDate, endDate);
     const eStats = ExpertsModule.getAllExpertsStats(startDate, endDate);
 
-    const totalCalls = mStats.reduce((sum, m) => sum + m.totalConnected, 0);
+    const totalCalls = mStats.reduce((sum, m) => sum + m.totalQuality, 0);
     const totalDone = mStats.reduce((sum, m) => sum + m.totalDone, 0);
     const totalRevenue = eStats.reduce((sum, e) => sum + e.totalRevenue, 0);
 

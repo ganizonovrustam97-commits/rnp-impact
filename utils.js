@@ -25,10 +25,10 @@ const Utils = {
      */
     formatUSD(num) {
         if (num === null || num === undefined || isNaN(num)) return '$0';
-        return new Intl.NumberFormat('ru-RU', { 
-            style: 'currency', 
-            currency: 'USD', 
-            minimumFractionDigits: 0 
+        return new Intl.NumberFormat('ru-RU', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0
         }).format(num);
     },
 
@@ -63,15 +63,14 @@ const Utils = {
      */
     loadCurrentMonthData() {
         const now = window.AppState?.currentMonth || new Date();
-        const start = new Date(now.getFullYear(), now.getMonth(), 1);
-        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        // Корректировка часового пояса
-        start.setMinutes(start.getMinutes() - start.getTimezoneOffset());
-        end.setMinutes(end.getMinutes() - end.getTimezoneOffset());
-        return { 
-            startDate: start.toISOString().split('T')[0], 
-            endDate: end.toISOString().split('T')[0] 
-        };
+        const year = now.getFullYear();
+        const month = now.getMonth();
+
+        const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
+        return { startDate, endDate };
     },
 
     /**
