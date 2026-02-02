@@ -32,33 +32,20 @@ const ManagersModule = {
         if (!report) return false;
 
         const callsTotal = report.callsTotal || 0;
-        const callsQuality = report.callsQuality || 0;
-        const appointmentsSet = report.appointmentsSet || 0;
-        const appointmentsDone = report.appointmentsDone || 0;
+        const minutesOnLine = report.callsQuality || 0; // Теперь это прямо время на линии в минутах
 
         // Нормативы:
         // 80–120 звонков в день
         const callsOk = callsTotal >= 80 && callsTotal <= 120;
 
-        // 120–150 минут на линии в день
-        // В текущей модели нет прямого поля "минуты", используем callsQuality (~кол-во качественных звонков >3 мин)
-        // и аппроксимируем минуты как callsQuality * 3
-        const minutesOnLine = callsQuality * 3;
-        const minutesOk = minutesOnLine >= 120 && minutesOnLine <= 150;
-
-        // Доходимость на консультацию — не ниже 70%
-        const reachability = appointmentsSet > 0
-            ? (appointmentsDone / appointmentsSet * 100)
-            : 100; // если назначений нет, доходимость не считаем нарушением
-        const reachabilityOk = reachability >= 70;
+        // 1.5 часа (90 минут) на линии в день минимум
+        const minutesOk = minutesOnLine >= 90;
 
         // Требования по CRM.
-        // Прямой интеграции с CRM нет, поэтому используем флаг crmOk,
-        // который менеджер/руководитель отмечает вручную.
-        // Для старых отчетов, где crmOk отсутствует, считаем, что CRM ок (чтобы не задним числом штрафовать).
         const crmOk = (typeof report.crmOk === 'undefined') ? true : !!report.crmOk;
 
-        const allOk = callsOk && minutesOk && reachabilityOk && crmOk;
+        // Дисциплина больше не зависит от назначено/проведено (доходимости)
+        const allOk = callsOk && minutesOk && crmOk;
         return !allOk;
     },
 

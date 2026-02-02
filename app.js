@@ -358,7 +358,7 @@ function renderManagerInputTable() {
                             <th>Дата</th>
                             <th>Звонки</th>
                             <th>Дозвоны</th>
-                            <th>>3 мин</th>
+                            <th>Время (мин)</th>
                             <th>Назн.</th>
                             <th>Пров.</th>
                             <th>Дисц.</th>
@@ -544,7 +544,7 @@ function renderManagerHistory() {
 
     tbody.innerHTML = reports.map(r => {
         const m = managers.find(man => man.id === r.managerId);
-        return `<tr><td>${formatDate(r.date)}</td><td>${m ? m.name : '?'}</td><td>${r.callsTotal}</td><td>${r.callsConnected}</td><td>${r.appointmentsSet}</td><td>${r.appointmentsDone}</td><td>${r.discipline ? '✅' : '❌'}</td></tr>`;
+        return `<tr><td>${formatDate(r.date)}</td><td>${m ? m.name : '?'}</td><td>${r.callsTotal}</td><td>${r.callsQuality || 0}</td><td>${r.appointmentsSet}</td><td>${r.appointmentsDone}</td><td>${r.discipline ? '✅' : '❌'}</td></tr>`;
     }).join('');
 }
 
