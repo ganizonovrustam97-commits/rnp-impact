@@ -1041,6 +1041,7 @@ function renderExpertsRanking(stats) {
 function renderSettingsView() {
     const managersList = document.getElementById('managers-list');
     const expertsList = document.getElementById('experts-list');
+    const marketersList = document.getElementById('marketers-list');
 
     if (managersList) {
         managersList.innerHTML = StorageModule.getManagers().map(m => `

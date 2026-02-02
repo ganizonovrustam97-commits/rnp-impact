@@ -130,6 +130,7 @@ const HistoryModule = {
             // Так как мы в ArchiveMode, модули будут брать данные из AppState.archiveData
             const mStats = ManagersModule.getAllManagersStats(startDate, endDate);
             const eStats = ExpertsModule.getAllExpertsStats(startDate, endDate);
+            const markStats = MarketersModule.getAllMarketersStats(startDate, endDate);
             const marketingStats = MarketingModule.calculateMetrics(startDate, endDate);
 
             const totalRevenue = eStats.reduce((sum, e) => sum + (e.totalRevenue || 0), 0);
@@ -141,8 +142,10 @@ const HistoryModule = {
                 totalSales,
                 totalManagers: mStats.length,
                 totalExperts: eStats.length,
+                totalMarketers: markStats.length,
                 mStats,
                 eStats,
+                markStats,
                 marketing: marketingStats,
                 rawData: window.AppState.archiveData
             };
@@ -275,6 +278,7 @@ const HistoryModule = {
         // Собираем полные данные статистики
         const mStats = ManagersModule.getAllManagersStats(startDate, endDate);
         const eStats = ExpertsModule.getAllExpertsStats(startDate, endDate);
+        const markStats = MarketersModule.getAllMarketersStats(startDate, endDate);
         const marketingStats = MarketingModule.calculateMetrics(startDate, endDate);
 
         // RAW DATA - Сохраняем абсолютно все данные
@@ -283,7 +287,8 @@ const HistoryModule = {
             expertSales: StorageModule.getExpertSales(),
             marketingReports: StorageModule.getMarketingReports(),
             managers: StorageModule.getManagers(),
-            experts: StorageModule.getExperts()
+            experts: StorageModule.getExperts(),
+            marketers: StorageModule.getMarketers()
         };
 
         const totalRevenue = eStats.reduce((sum, e) => sum + (e.totalRevenue || 0), 0);
@@ -294,8 +299,10 @@ const HistoryModule = {
             totalSales,
             totalManagers: mStats.length,
             totalExperts: eStats.length,
+            totalMarketers: markStats.length,
             mStats,
             eStats,
+            markStats,
             marketing: marketingStats,
             rawData
         };
