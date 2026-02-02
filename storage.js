@@ -83,21 +83,26 @@ const StorageModule = {
 
     // === LOCAL STORAGE (CACHE) ===
 
+    /**
+     * Helper to map consistent keys for LocalStorage
+     */
+    getMappedKey(key) {
+        if (key === 'rnp_managers') return this.KEYS.MANAGERS;
+        if (key === 'rnp_experts') return this.KEYS.EXPERTS;
+        if (key === 'rnp_manager_reports') return this.KEYS.MANAGER_REPORTS;
+        if (key === 'rnp_expert_sales') return this.KEYS.EXPERT_SALES;
+        if (key === 'rnp_marketing_reports') return this.KEYS.MARKETING_REPORTS;
+        if (key === 'rnp_history') return this.KEYS.HISTORY;
+        if (key === 'rnp_users') return this.KEYS.USERS;
+        if (key === 'rnp_marketers') return this.KEYS.MARKETERS;
+        if (key === 'rnp_last_month') return 'rnp_last_month'; // Marker
+        return key;
+    },
+
     get(key) {
         try {
-            // Маппинг ключей (если старые имена отличаются от коллекций)
-            // Но мы стараемся использовать те же имена.
-            // Для совместимости со старым кодом:
-            if (key === 'rnp_managers') key = this.KEYS.MANAGERS;
-            if (key === 'rnp_experts') key = this.KEYS.EXPERTS;
-            if (key === 'rnp_manager_reports') key = this.KEYS.MANAGER_REPORTS;
-            if (key === 'rnp_expert_sales') key = this.KEYS.EXPERT_SALES;
-            if (key === 'rnp_marketing_reports') key = this.KEYS.MARKETING_REPORTS;
-            if (key === 'rnp_history') key = this.KEYS.HISTORY;
-            if (key === 'rnp_users') key = this.KEYS.USERS;
-            if (key === 'rnp_marketers') key = this.KEYS.MARKETERS;
-
-            const data = localStorage.getItem(key);
+            const mappedKey = this.getMappedKey(key);
+            const data = localStorage.getItem(mappedKey);
             return data ? JSON.parse(data) : null;
         } catch (error) {
             console.error('Error reading from storage:', error);
@@ -112,19 +117,11 @@ const StorageModule = {
     // === WRITERS (CLOUD + LOCAL) ===
 
     async set(key, value) {
+        const mappedKey = this.getMappedKey(key);
         // 1. Оптимистичное обновление локально
-        localStorage.setItem(key, JSON.stringify(value));
+        localStorage.setItem(mappedKey, JSON.stringify(value));
 
-        let collectionName = key;
-        // Маппинг ключей на коллекции
-        if (key === 'rnp_managers') collectionName = this.KEYS.MANAGERS;
-        if (key === 'rnp_experts') collectionName = this.KEYS.EXPERTS;
-        if (key === 'rnp_manager_reports') collectionName = this.KEYS.MANAGER_REPORTS;
-        if (key === 'rnp_expert_sales') collectionName = this.KEYS.EXPERT_SALES;
-        if (key === 'rnp_marketing_reports') collectionName = this.KEYS.MARKETING_REPORTS;
-        if (key === 'rnp_history') collectionName = this.KEYS.HISTORY;
-        if (key === 'rnp_users') collectionName = this.KEYS.USERS;
-        if (key === 'rnp_marketers') collectionName = this.KEYS.MARKETERS;
+        let collectionName = mappedKey;
 
         // 2. Отправка в Firestore
         if (window.FirebaseConfig && window.FirebaseConfig.db) {

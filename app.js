@@ -6,11 +6,14 @@
 // Глобальное состояние приложения
 window.AppState = {
     currentView: 'dashboard',
-    currentMonth: new Date(),
+    currentMonth: (function () {
+        const saved = localStorage.getItem('rnp_selected_month');
+        return saved ? new Date(saved) : new Date();
+    })(),
     isArchiveMode: false,
     archiveData: null,
     archiveMonthLabel: '',
-    openSections: {} // Добавлено для сохранения состояния аккордеонов
+    openSections: {}
 };
 
 // ДИАГНОСТИКА ХРАНИЛИЩА (ВРЕМЕННО)
@@ -43,19 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // === АВТО-ВОССТАНОВЛЕНИЕ ДАННЫХ ===
     // Проверяем, остались ли данные за Январь в текущем хранилище (не в архиве)
     const allReports = StorageModule.getManagerReports();
-    const janData = allReports.some(r => r.date.startsWith('2026-01'));
+    const hasJanReports = allReports.some(r => r.date && r.date.startsWith('2026-01'));
+
+    const allSales = StorageModule.getExpertSales();
+    const hasJanSales = allSales.some(s => s.date && s.date.startsWith('2026-01'));
+
     const history = StorageModule.getHistory();
     const janArchive = history.some(h => h.month.toLowerCase().includes('январь 2026'));
 
-    if (janData && !janArchive) {
+    if ((hasJanReports || hasJanSales) && !janArchive) {
         // Если данные есть, а архива нет — значит месяц не закрылся. Закрываем принудительно.
         console.warn('Recovering orphaned January data...');
+        alert('⚠️ Обнаружены незакрытые данные за Январь 2026.\n\nСистема сейчас перенесет их в АРХИВ, чтобы они не потерялись.');
         HistoryModule.archiveCurrentMonth('январь 2026');
-
-        setTimeout(() => {
-            alert('⚠️ Обнаружены незакрытые данные за Январь 2026.\n\nСистема автоматически перенесла их в АРХИВ.\nЗайдите во вкладку "История", чтобы их увидеть.');
-            location.reload();
-        }, 500);
+        setTimeout(() => location.reload(), 1000);
     }
 
     // Проверяем авторизацию
@@ -184,6 +188,9 @@ window.handleAdminMonthChange = function (e) {
         window.AppState.currentArchiveId = null;
         window.AppState.archiveData = null;
         window.AppState.currentMonth = targetDate;
+
+        // Сохраняем выбранный месяц
+        localStorage.setItem('rnp_selected_month', targetDate.toISOString());
         document.body.classList.remove('archive-mode-active');
         HistoryModule.updateArchiveBanner();
 
