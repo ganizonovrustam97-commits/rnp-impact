@@ -230,10 +230,14 @@ const StorageModule = {
     },
     updateManager(id, updates) {
         const list = this.getManagers();
-        const idx = list.findIndex(m => m.id == id); // == for string/number safety
+        const idx = list.findIndex(m => m.id == id);
         if (idx !== -1) {
             list[idx] = { ...list[idx], ...updates };
             this.set('rnp_managers', list);
+            // Cloud Update
+            if (window.FirebaseConfig?.db) {
+                window.FirebaseConfig.db.collection(this.KEYS.MANAGERS).doc(String(id)).update(updates);
+            }
             return true;
         }
         return false;
@@ -241,8 +245,7 @@ const StorageModule = {
     deleteManager(id) {
         let list = this.getManagers();
         list = list.filter(m => m.id !== id);
-        this.set('rnp_managers', list); // Local update
-        // Cloud delete
+        this.set('rnp_managers', list);
         if (window.FirebaseConfig?.db) {
             window.FirebaseConfig.db.collection(this.KEYS.MANAGERS).doc(String(id)).delete();
         }
@@ -263,6 +266,10 @@ const StorageModule = {
         if (idx !== -1) {
             list[idx] = { ...list[idx], ...updates };
             this.set('rnp_experts', list);
+            // Cloud Update
+            if (window.FirebaseConfig?.db) {
+                window.FirebaseConfig.db.collection(this.KEYS.EXPERTS).doc(String(id)).update(updates);
+            }
             return true;
         }
         return false;

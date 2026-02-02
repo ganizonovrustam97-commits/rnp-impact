@@ -1018,18 +1018,24 @@ function renderSettingsView() {
 
     if (managersList) {
         managersList.innerHTML = StorageModule.getManagers().map(m => `
-            <li>
+            <li class="user-item">
                 <span>${m.name} (План: ${m.monthPlan}) ${m.promoted ? '⭐' : ''}</span>
-                <button class="btn-icon" onclick="window.deleteManager('${m.id}')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>🗑️</button>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn btn-sm btn-secondary" onclick="window.openEditModal('${m.id}', 'manager')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.deleteManager('${m.id}')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>🗑️</button>
+                </div>
             </li>
         `).join('') || '<li class="text-muted">Нет сотрудников</li>';
     }
 
     if (expertsList) {
         expertsList.innerHTML = StorageModule.getExperts().map(e => `
-            <li>
+            <li class="user-item">
                 <span>${e.name} (План: ${formatCurrency(e.monthPlan)})</span>
-                <button class="btn-icon" onclick="window.deleteExpert('${e.id}')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>🗑️</button>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn btn-sm btn-secondary" onclick="window.openEditModal('${e.id}', 'expert')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.deleteExpert('${e.id}')" ${window.AppState.isArchiveMode ? 'disabled' : ''}>🗑️</button>
+                </div>
             </li>
         `).join('') || '<li class="text-muted">Нет сотрудников</li>';
     }
@@ -1238,3 +1244,72 @@ window.updateExpertPlan = function (id, val) {
         renderDashboard();
     }
 };
+
+/**
+ * Открытие модалки редактирования
+ */
+window.openEditModal = function (id, type) {
+    const modal = document.getElementById('edit-user-modal');
+    const nameInput = document.getElementById('edit-user-name');
+    const planInput = document.getElementById('edit-user-plan');
+    const idInput = document.getElementById('edit-user-id');
+    const typeInput = document.getElementById('edit-user-type');
+    const title = document.getElementById('edit-modal-title');
+
+    let user;
+    if (type === 'manager') {
+        user = StorageModule.getManagers().find(m => m.id == id);
+        title.textContent = 'Редактировать SDR менеджера';
+    } else {
+        user = StorageModule.getExperts().find(e => e.id == id);
+        title.textContent = 'Редактировать эксперта';
+    }
+
+    if (user) {
+        idInput.value = id;
+        typeInput.value = type;
+        nameInput.value = user.name;
+        planInput.value = user.monthPlan || 0;
+        modal.style.display = 'flex';
+    }
+};
+
+window.closeEditModal = function () {
+    document.getElementById('edit-user-modal').style.display = 'none';
+};
+
+/**
+ * Обработка сохранения редактирования
+ */
+window.handleEditUser = function (e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-user-id').value;
+    const type = document.getElementById('edit-user-type').value;
+    const name = document.getElementById('edit-user-name').value;
+    const plan = parseInt(document.getElementById('edit-user-plan').value) || 0;
+
+    let success = false;
+    if (type === 'manager') {
+        success = StorageModule.updateManager(id, { name, monthPlan: plan });
+    } else {
+        success = StorageModule.updateExpert(id, { name, monthPlan: plan });
+    }
+
+    if (success) {
+        Utils.showNotification('Данные сотрудника обновлены', 'success');
+        window.closeEditModal();
+        renderSettingsView(); // Обновляем список
+        renderDashboard();    // Обновляем дашборд (планы могли измениться)
+    } else {
+        Utils.showNotification('Ошибка при обновлении данных', 'error');
+    }
+};
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+    const editForm = document.getElementById('edit-user-form');
+    if (editForm) {
+        editForm.addEventListener('submit', window.handleEditUser);
+    }
+});
+
