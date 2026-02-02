@@ -147,7 +147,10 @@ const HistoryModule = {
                 eStats,
                 markStats,
                 marketing: marketingStats,
-                rawData: window.AppState.archiveData
+                rawData: {
+                    ...window.AppState.archiveData,
+                    decomposition: StorageModule.getDecomposition()
+                }
             };
 
             // 4. Синхронизируем
@@ -288,7 +291,8 @@ const HistoryModule = {
             marketingReports: StorageModule.getMarketingReports(),
             managers: StorageModule.getManagers(),
             experts: StorageModule.getExperts(),
-            marketers: StorageModule.getMarketers()
+            marketers: StorageModule.getMarketers(),
+            decomposition: StorageModule.getDecomposition()
         };
 
         const totalRevenue = eStats.reduce((sum, e) => sum + (e.totalRevenue || 0), 0);

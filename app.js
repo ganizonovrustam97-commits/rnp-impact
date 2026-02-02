@@ -903,7 +903,85 @@ function renderMarketingView() {
 
     renderMarketingInputTable();
     renderMarketersSalary();
+    renderDecomposition();
 }
+
+/**
+ * Рендер таблицы декомпозиции
+ */
+window.renderDecomposition = function () {
+    const monthLabel = window.AppState.archiveMonthLabel || (window.AppState.currentMonth || new Date()).toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+    const data = DecompositionModule.getDecompositionForMonth(monthLabel);
+
+    const inputs = {
+        revenue: document.getElementById('decomp-revenue'),
+        avgTicket: document.getElementById('decomp-avg-ticket'),
+        crSale: document.getElementById('decomp-cr-sale'),
+        crOffer: document.getElementById('decomp-cr-offer'),
+        crLead: document.getElementById('decomp-cr-lead'),
+        cpl: document.getElementById('decomp-cpl')
+    };
+
+    if (!inputs.revenue) return;
+
+    // Заполняем инпуты
+    inputs.revenue.value = data.targetRevenue || '';
+    inputs.avgTicket.value = data.avgTicket || '';
+    inputs.crSale.value = data.crOfferToSale || '';
+    inputs.crOffer.value = data.crConductedToOffer || '';
+    inputs.crLead.value = data.crLeadToConducted || '';
+    inputs.cpl.value = data.cpl || '';
+
+    // Блокируем в архиве
+    Object.values(inputs).forEach(inp => inp.disabled = window.AppState.isArchiveMode && !AuthModule.isAdmin());
+
+    // Навешиваем живой пересчет
+    Object.values(inputs).forEach(inp => {
+        inp.oninput = () => calculateDecompositionLive();
+    });
+
+    calculateDecompositionLive();
+};
+
+function calculateDecompositionLive() {
+    const data = {
+        targetRevenue: parseFloat(document.getElementById('decomp-revenue').value) || 0,
+        avgTicket: parseFloat(document.getElementById('decomp-avg-ticket').value) || 0,
+        crOfferToSale: parseFloat(document.getElementById('decomp-cr-sale').value) || 0,
+        crConductedToOffer: parseFloat(document.getElementById('decomp-cr-offer').value) || 0,
+        crLeadToConducted: parseFloat(document.getElementById('decomp-cr-lead').value) || 0,
+        cpl: parseFloat(document.getElementById('decomp-cpl').value) || 0
+    };
+
+    const res = DecompositionModule.calculate(data);
+
+    document.getElementById('res-revenue').textContent = formatUSD(res.targetRevenue);
+    document.getElementById('res-sales').textContent = res.salesNeeded + ' продаж';
+    document.getElementById('res-offers').textContent = res.offersNeeded + ' офферов';
+    document.getElementById('res-conducted').textContent = res.conductedNeeded + ' КЭВ';
+    document.getElementById('res-leads').textContent = res.leadsNeeded + ' лидов';
+    document.getElementById('res-budget').textContent = formatUSD(res.budgetNeeded) + ' бюджет';
+    document.getElementById('res-roi').textContent = res.roi + '%';
+}
+
+window.saveDecomposition = function () {
+    if (window.AppState.isArchiveMode && !AuthModule.isAdmin()) return;
+
+    const monthLabel = window.AppState.archiveMonthLabel || (window.AppState.currentMonth || new Date()).toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+
+    const data = {
+        month: monthLabel,
+        targetRevenue: parseFloat(document.getElementById('decomp-revenue').value) || 0,
+        avgTicket: parseFloat(document.getElementById('decomp-avg-ticket').value) || 0,
+        crOfferToSale: parseFloat(document.getElementById('decomp-cr-sale').value) || 0,
+        crConductedToOffer: parseFloat(document.getElementById('decomp-cr-offer').value) || 0,
+        crLeadToConducted: parseFloat(document.getElementById('decomp-cr-lead').value) || 0,
+        cpl: parseFloat(document.getElementById('decomp-cpl').value) || 0
+    };
+
+    DecompositionModule.saveDecomposition(data);
+    Utils.showNotification('План декомпозиции сохранен на ' + monthLabel, 'success');
+};
 
 function renderMarketersSalary() {
     const tbody = document.querySelector('#marketers-salary-table tbody');

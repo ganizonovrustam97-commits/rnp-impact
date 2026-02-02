@@ -16,6 +16,7 @@ const StorageModule = {
         HISTORY: 'history',
         USERS: 'users',
         MARKETERS: 'marketers',
+        DECOMPOSITION: 'decomposition',
         LAST_MONTH_MARKER: 'system_settings' // Храним отдельно
     },
 
@@ -40,7 +41,8 @@ const StorageModule = {
             this.KEYS.MARKETING_REPORTS,
             this.KEYS.HISTORY,
             this.KEYS.USERS,
-            this.KEYS.MARKETERS
+            this.KEYS.MARKETERS,
+            this.KEYS.DECOMPOSITION
         ];
 
         collections.forEach(collectionName => {
@@ -95,6 +97,7 @@ const StorageModule = {
         if (key === 'rnp_history') return this.KEYS.HISTORY;
         if (key === 'rnp_users') return this.KEYS.USERS;
         if (key === 'rnp_marketers') return this.KEYS.MARKETERS;
+        if (key === 'rnp_decomposition') return this.KEYS.DECOMPOSITION;
         if (key === 'rnp_last_month') return 'rnp_last_month'; // Marker
         return key;
     },
@@ -175,7 +178,8 @@ const StorageModule = {
             { old: 'rnp_marketing_reports', new: this.KEYS.MARKETING_REPORTS, val: [] },
             { old: 'rnp_history', new: this.KEYS.HISTORY, val: [] },
             { old: 'rnp_users', new: this.KEYS.USERS, val: [] },
-            { old: 'rnp_marketers', new: this.KEYS.MARKETERS, val: [] }
+            { old: 'rnp_marketers', new: this.KEYS.MARKETERS, val: [] },
+            { old: 'rnp_decomposition', new: this.KEYS.DECOMPOSITION, val: [] }
         ];
 
         defaults.forEach(d => {
@@ -223,6 +227,11 @@ const StorageModule = {
 
     getUsers() {
         return this.get('rnp_users') || [];
+    },
+
+    getDecomposition() {
+        if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.decomposition || [];
+        return this.get('rnp_decomposition') || [];
     },
 
     // === SPECIFIC SETTERS (Calling generic set) ===

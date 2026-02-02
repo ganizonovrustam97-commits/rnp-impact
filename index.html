@@ -189,6 +189,69 @@
                         <p class="subtitle">Анализ эффективности рекламы и конверсий</p>
                     </div>
 
+                    <!-- Decomposition Section -->
+                    <div class="section" id="decomposition-section">
+                        <h3 class="section-title">📊 Декомпозиция целей и бюджет (План)</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Показатель</th>
+                                        <th>План (Ввод)</th>
+                                        <th>Расчет (Требуется)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Целевая выручка ($)</td>
+                                        <td><input type="number" id="decomp-revenue" class="table-input" step="100"
+                                                placeholder="0"></td>
+                                        <td><strong id="res-revenue">$0</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Средний чек ($)</td>
+                                        <td><input type="number" id="decomp-avg-ticket" class="table-input" step="10"
+                                                placeholder="0"></td>
+                                        <td><strong id="res-sales">0 продаж</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Конверсия Оффер → Прод (%)</td>
+                                        <td><input type="number" id="decomp-cr-sale" class="table-input" step="0.1"
+                                                placeholder="0"></td>
+                                        <td><strong id="res-offers">0 офферов</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Конверсия КЭВ → Оффер (%)</td>
+                                        <td><input type="number" id="decomp-cr-offer" class="table-input" step="0.1"
+                                                placeholder="0"></td>
+                                        <td><strong id="res-conducted">0 КЭВ</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Конверсия Лид → КЭВ (%)</td>
+                                        <td><input type="number" id="decomp-cr-lead" class="table-input" step="0.1"
+                                                placeholder="0"></td>
+                                        <td><strong id="res-leads">0 лидов</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Цена лида CPL ($)</td>
+                                        <td><input type="number" id="decomp-cpl" class="table-input" step="0.01"
+                                                placeholder="0"></td>
+                                        <td><strong id="res-budget">$0 бюджет</strong></td>
+                                    </tr>
+                                    <tr style="background: rgba(16,185,129,0.1)">
+                                        <td><strong>ОЖИДАЕМЫЙ ROI</strong></td>
+                                        <td colspan="2"><strong id="res-roi"
+                                                style="font-size: 1.2rem; color: var(--accent-success)">0%</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                                <button class="btn btn-primary" onclick="window.saveDecomposition()">💾 Сохранить
+                                    план</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Marketing Cards -->
                     <div class="cards-grid" id="marketing-cards-container">
                         <!-- Будет заполнено JS: ROMI, CPL, CAC, ROMI -->
@@ -462,6 +525,7 @@
     <script src="auth.js"></script>
     <script src="marketing.js"></script>
     <script src="marketers.js"></script>
+    <script src="decomposition.js"></script>
     <script src="managers.js"></script>
     <script src="experts.js"></script>
     <script src="history.js"></script>
