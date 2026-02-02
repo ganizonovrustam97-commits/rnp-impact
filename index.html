@@ -44,6 +44,13 @@
                         <h1>РНП Impact</h1>
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div id="admin-month-selector"
+                            style="display: none; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--border-color);">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap;">📅
+                                Период:</span>
+                            <input type="month" id="admin-date-input" class="table-input"
+                                style="width: auto; height: 32px; padding: 2px 8px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold; cursor: pointer;">
+                        </div>
                         <span id="current-user-name" style="color: var(--text-muted); font-size: 0.9rem;"></span>
                         <button id="logout-btn" class="btn" style="padding: 0.5rem 1rem;">Выход</button>
                     </div>

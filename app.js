@@ -124,13 +124,17 @@ function showMainApp() {
  */
 function setupUIForRole(role) {
     const nav = document.getElementById('main-nav');
+    const adminSelector = document.getElementById('admin-month-selector');
 
     if (role === 'admin') {
         // Админ видит все разделы
         if (nav) nav.style.display = 'flex';
+        if (adminSelector) adminSelector.style.display = 'flex';
+        updateAdminMonthPicker();
     } else {
         // Сотрудники не видят навигацию
         if (nav) nav.style.display = 'none';
+        if (adminSelector) adminSelector.style.display = 'none';
 
         // Переключаемся на соответствующий раздел
         if (role === 'manager') {
@@ -140,6 +144,53 @@ function setupUIForRole(role) {
         }
     }
 }
+
+/**
+ * Обновление значения в селекторе месяцев для админа
+ */
+window.updateAdminMonthPicker = function () {
+    const input = document.getElementById('admin-date-input');
+    if (input && window.AppState.currentMonth) {
+        const year = window.AppState.currentMonth.getFullYear();
+        const month = String(window.AppState.currentMonth.getMonth() + 1).padStart(2, '0');
+        input.value = `${year}-${month}`;
+    }
+};
+
+/**
+ * Обработчик изменения месяца админом
+ */
+window.handleAdminMonthChange = function (e) {
+    const dateStr = e.target.value; // "YYYY-MM"
+    if (!dateStr) return;
+
+    const [year, month] = dateStr.split('-').map(Number);
+    const targetDate = new Date(year, month - 1, 1);
+
+    // 1. Ищем, есть ли этот месяц в архиве
+    const history = StorageModule.getHistory();
+    const monthNames = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+        'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+    const label = `${monthNames[month - 1]} ${year}`;
+    const archiveItem = history.find(h => h.month.toLowerCase().includes(label.toLowerCase()));
+
+    if (archiveItem) {
+        console.log(`Found archive for ${label}, switching to Archive Mode.`);
+        HistoryModule.loadArchiveState(archiveItem);
+    } else {
+        console.log(`No archive for ${label}, switching to Live Mode for this month.`);
+        // Если нет в архиве — выходим из режима архива и переходим на этот месяц в "живом" режиме
+        window.AppState.isArchiveMode = false;
+        window.AppState.currentArchiveId = null;
+        window.AppState.archiveData = null;
+        window.AppState.currentMonth = targetDate;
+        document.body.classList.remove('archive-mode-active');
+        HistoryModule.updateArchiveBanner();
+
+        // Перерисовываем текущий вид
+        renderView(window.AppState.currentView);
+    }
+};
 
 /**
  * Обработчик входа
@@ -251,6 +302,12 @@ function initializeNavigation() {
             renderView(view);
         });
     });
+
+    // Обработчик изменения месяца для админа
+    const adminDateInput = document.getElementById('admin-date-input');
+    if (adminDateInput) {
+        adminDateInput.addEventListener('change', window.handleAdminMonthChange);
+    }
 }
 
 function renderView(view) {
@@ -262,7 +319,22 @@ function renderView(view) {
     // Показываем нужный раздел
     const targetSection = document.getElementById(`${view}-view`);
     if (targetSection) {
-        targetSection.classList.add('active'); // Changed from style.display = 'block' to add active class
+        targetSection.classList.add('active');
+    }
+
+    // Обновляем активную кнопку в навигации
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        if (btn.dataset.view === view) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Обновляем селектор месяцев (на случай если переход был не через него)
+    if (typeof updateAdminMonthPicker === 'function') {
+        updateAdminMonthPicker();
     }
 
     // Рендерим контент

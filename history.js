@@ -83,8 +83,14 @@ const HistoryModule = {
 
         document.body.classList.add('archive-mode-active');
         this.updateArchiveBanner();
-        if (typeof switchView === 'function') {
-            switchView('dashboard');
+
+        // Обновляем селектор месяцев для админа
+        if (typeof window.updateAdminMonthPicker === 'function') {
+            window.updateAdminMonthPicker();
+        }
+
+        if (typeof renderView === 'function') {
+            renderView(window.AppState.currentView || 'dashboard');
         }
     },
 
@@ -132,8 +138,14 @@ const HistoryModule = {
 
         document.body.classList.remove('archive-mode-active');
         this.updateArchiveBanner();
-        if (typeof switchView === 'function') {
-            switchView('history');
+
+        // Обновляем селектор месяцев для админа
+        if (typeof window.updateAdminMonthPicker === 'function') {
+            window.updateAdminMonthPicker();
+        }
+
+        if (typeof renderView === 'function') {
+            renderView('history');
         }
     },
 
@@ -182,7 +194,7 @@ const HistoryModule = {
      * Архивирование текущего месяца
      */
     archiveCurrentMonth(label = null) {
-        const now = new Date();
+        const now = window.AppState.currentMonth || new Date();
         const monthLabel = label || now.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
 
         let startDate, endDate;
@@ -243,7 +255,7 @@ const HistoryModule = {
         };
 
         StorageModule.archiveMonth(monthLabel, archiveData);
-        StorageModule.clearCurrentMonthData();
+        StorageModule.clearCurrentMonthData(startDate, endDate);
 
         if (!label) {
             StorageModule.set(StorageModule.KEYS.LAST_MONTH_MARKER, monthLabel);

@@ -291,26 +291,29 @@ const StorageModule = {
         this.set('rnp_last_month', monthLabel);
     },
 
-    clearCurrentMonthData() {
-        // В облаке мы не должны "удалять" коллекцию reports, иначе потеряем историю?
-        // Нет, мы храним историю в объекте 'history'.
-        // Значит текущие репорты можно чистить.
+    clearCurrentMonthData(startDate, endDate) {
+        if (!startDate || !endDate) {
+            this.set('rnp_manager_reports', []);
+            this.set('rnp_expert_sales', []);
+            this.set('rnp_marketing_reports', []);
+            return;
+        }
 
-        this.set('rnp_manager_reports', []);
-        this.set('rnp_expert_sales', []);
-        this.set('rnp_marketing_reports', []);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
 
-        // Cloud Clear (Batch Delete is tricky in one go, but we can try)
-        // Для MVP: просто не будем загружать старые? Нет, надо чистить.
-        // Оставим пока локальную очистку. По мере перезаписи массивов, они очистятся.
-        // НО: Firestore set() с массивом выше - это "upsert". Он не удаляет старые доки из коллекции.
-        // Это проблема гибридного подхода.
+        const filterFn = r => {
+            const d = new Date(r.date);
+            return d < start || d > end;
+        };
 
-        // FIXME: Для полной очистки коллекции в Firestore нужен backend.
-        // Решение: Добавим флаг `isDeleted` или просто будем фильтровать по дате.
-        // Или, раз мы используем синхронизацию "массив -> документы", нам нужно удалять документы.
+        const mReports = (this.get('rnp_manager_reports') || []).filter(filterFn);
+        const eSales = (this.get('rnp_expert_sales') || []).filter(filterFn);
+        const markReports = (this.get('rnp_marketing_reports') || []).filter(filterFn);
 
-        // Пока оставим как есть.
+        this.set('rnp_manager_reports', mReports);
+        this.set('rnp_expert_sales', eSales);
+        this.set('rnp_marketing_reports', markReports);
     },
 
     // Helpers used in UI
