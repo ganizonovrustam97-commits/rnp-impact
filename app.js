@@ -440,8 +440,6 @@ function renderManagerInputTable() {
                             <th>Время (мин)</th>
                             <th>Назн.</th>
                             <th>Пров.</th>
-                            <th>Дисц.</th>
-                            <th>CRM</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -496,8 +494,6 @@ function generateManagerRows(managerId, days, allReports) {
                     <td>${r.callsQuality || 0}</td>
                     <td>${r.appointmentsSet || 0}</td>
                     <td>${r.appointmentsDone || 0}</td>
-                    <td>${r.discipline ? '✅' : '❌'}</td>
-                    <td>${(typeof r.crmOk === 'undefined') || r.crmOk ? '✅' : '❌'}</td>
                 </tr>
             `;
         } else {
@@ -509,8 +505,6 @@ function generateManagerRows(managerId, days, allReports) {
                     <td><input type="number" class="table-input" min="0" value="${r.callsQuality || 0}" onchange="saveCellManager('${managerId}', '${dateStr}', 'callsQuality', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" value="${r.appointmentsSet || 0}" onchange="saveCellManager('${managerId}', '${dateStr}', 'appointmentsSet', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" value="${r.appointmentsDone || 0}" onchange="saveCellManager('${managerId}', '${dateStr}', 'appointmentsDone', this.value)"></td>
-                    <td><input type="checkbox" ${r.discipline ? 'checked' : ''} onchange="saveCellManager('${managerId}', '${dateStr}', 'discipline', this.checked)"></td>
-                    <td><input type="checkbox" ${((typeof r.crmOk === 'undefined') || r.crmOk) ? 'checked' : ''} onchange="saveCellManager('${managerId}', '${dateStr}', 'crmOk', this.checked)"></td>
                 </tr>
             `;
         }
@@ -591,8 +585,6 @@ function renderManagersView() {
                         <div><p class="label">Зв→Наз</p><p class="val">${stat.conversionCallsToSet}%</p></div>
                         <div><p class="label">Наз→Пр</p><p class="val">${stat.conversionSetToDone}%</p></div>
                         <div><p class="label">Зарплата</p><p class="val text-success">${formatCurrency(salary.totalSalary)}</p></div>
-                        <div><p class="label">Штрафы (дней)</p><p class="val">${penaltiesCount}</p></div>
-                        <div><p class="label">Сумма штрафов</p><p class="val text-danger">${formatCurrency(penaltiesAmount)}</p></div>
                     </div>
                 </div>
             `;
@@ -623,7 +615,7 @@ function renderManagerHistory() {
 
     tbody.innerHTML = reports.map(r => {
         const m = managers.find(man => man.id === r.managerId);
-        return `<tr><td>${formatDate(r.date)}</td><td>${m ? m.name : '?'}</td><td>${r.callsTotal}</td><td>${r.callsQuality || 0}</td><td>${r.appointmentsSet}</td><td>${r.appointmentsDone}</td><td>${r.discipline ? '✅' : '❌'}</td></tr>`;
+        return `<tr><td>${formatDate(r.date)}</td><td>${m ? m.name : '?'}</td><td>${r.callsTotal}</td><td>${r.callsQuality || 0}</td><td>${r.appointmentsSet}</td><td>${r.appointmentsDone}</td></tr>`;
     }).join('');
 }
 
@@ -680,7 +672,6 @@ function renderExpertInputTable() {
                             <th>Прод.</th>
                             <th>Выручка (сум)</th>
                             <th>Выручка (USD)</th>
-                            <th>Дисц.</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -752,7 +743,6 @@ function generateExpertRows(expertId, days, allSales) {
                     <td>${s.dealsCount || 0}</td>
                     <td>${formatCurrency(s.amount || s.amountSum || 0)}</td>
                     <td>${s.amountUSD || s.amountUsd ? formatUSD(s.amountUSD || s.amountUsd) : '-'}</td>
-                    <td>${s.discipline ? '✅' : '❌'}</td>
                 </tr>
             `;
         } else {
@@ -764,7 +754,6 @@ function generateExpertRows(expertId, days, allSales) {
                     <td><input type="number" class="table-input" min="0" value="${s.dealsCount || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'dealsCount', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" step="0.01" value="${s.amount || s.amountSum || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'amount', this.value)"></td>
                     <td><input type="number" class="table-input" min="0" step="0.01" value="${s.amountUSD || s.amountUsd || 0}" onchange="saveCellExpert('${expertId}', '${dateStr}', 'amountUSD', this.value)"></td>
-                    <td><input type="checkbox" ${s.discipline ? 'checked' : ''} onchange="saveCellExpert('${expertId}', '${dateStr}', 'discipline', this.checked)"></td>
                 </tr>
             `;
         }

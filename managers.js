@@ -9,9 +9,9 @@ const ManagersModule = {
      */
     SALARY_CONFIG: {
         HARD_SALARY: 1000000,           // Гарантированный оклад
-        DISCIPLINE: 1000000,            // Максимальная дисциплина
+        DISCIPLINE: 0,                  // Дисциплина убрана
         BONUS_PER_DONE: 100000,         // Бонус за 1 проведенное
-        PENALTY_PER_DAY: 100000,        // Штраф за невыполнение норм за день
+        PENALTY_PER_DAY: 0,             // Штрафы убраны
 
         // Лестница недельных бонусов
         WEEKLY_BONUS: {
@@ -26,27 +26,10 @@ const ManagersModule = {
 
     /**
      * Проверка выполнения ежедневных нормативов менеджера
-     * Возвращает true, если НАРУШЕНИЕ (для удобства подсчета штрафов)
+     * Возвращает false (нарушений нет)
      */
     isDailyNormViolated(report) {
-        if (!report) return false;
-
-        const callsTotal = report.callsTotal || 0;
-        const minutesOnLine = report.callsQuality || 0; // Теперь это прямо время на линии в минутах
-
-        // Нормативы:
-        // 80–120 звонков в день
-        const callsOk = callsTotal >= 80 && callsTotal <= 120;
-
-        // 1.5 часа (90 минут) на линии в день минимум
-        const minutesOk = minutesOnLine >= 90;
-
-        // Требования по CRM.
-        const crmOk = (typeof report.crmOk === 'undefined') ? true : !!report.crmOk;
-
-        // Дисциплина больше не зависит от назначено/проведено (доходимости)
-        const allOk = callsOk && minutesOk && crmOk;
-        return !allOk;
+        return false;
     },
 
     /**
@@ -79,19 +62,7 @@ const ManagersModule = {
         // Базовый фикс (может быть повышен)
         let baseFix = manager.promoted
             ? this.SALARY_CONFIG.PROMOTED_FIX
-            : this.SALARY_CONFIG.HARD_SALARY + this.SALARY_CONFIG.DISCIPLINE;
-
-        // Если не повышен, считаем дисциплину пропорционально
-        let disciplineBonus = 0;
-        if (!manager.promoted) {
-            const totalDays = reports.length;
-            const disciplineDays = reports.filter(r => r.discipline).length;
-            disciplineBonus = totalDays > 0
-                ? (disciplineDays / totalDays) * this.SALARY_CONFIG.DISCIPLINE
-                : 0;
-
-            baseFix = this.SALARY_CONFIG.HARD_SALARY + disciplineBonus;
-        }
+            : this.SALARY_CONFIG.HARD_SALARY;
 
         // Сдельный бонус (100к за каждое проведенное)
         const totalDone = reports.reduce((sum, r) => sum + r.appointmentsDone, 0);
@@ -100,17 +71,15 @@ const ManagersModule = {
         // Недельные бонусы
         const weeklyBonuses = this.calculateWeeklyBonuses(reports);
 
-        // Штрафы за нарушения нормативов (один штраф за день с нарушением)
-        const penaltiesCount = reports.reduce((count, r) => {
-            return count + (this.isDailyNormViolated(r) ? 1 : 0);
-        }, 0);
-        const penaltiesAmount = penaltiesCount * this.SALARY_CONFIG.PENALTY_PER_DAY;
+        // Штрафы убраны
+        const penaltiesCount = 0;
+        const penaltiesAmount = 0;
 
         // Бонус за лучший месяц (определяем отдельно)
         const isBestOfMonth = this.isBestOfMonth(managerId, startDate, endDate);
         const bestMonthBonus = isBestOfMonth ? this.SALARY_CONFIG.BEST_MONTH_BONUS : 0;
 
-        const totalSalary = baseFix + pieceBonus + weeklyBonuses + bestMonthBonus - penaltiesAmount;
+        const totalSalary = baseFix + pieceBonus + weeklyBonuses + bestMonthBonus;
 
         return {
             managerId,

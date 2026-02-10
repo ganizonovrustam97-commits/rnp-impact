@@ -6,7 +6,7 @@
 const ExpertsModule = {
     SALARY_CONFIG: {
         HARD_SALARY: 2000000,
-        DISCIPLINE: 1000000,
+        DISCIPLINE: 0,
         BEST_MONTH_BONUS: 1000000,
         COMMISSION_TIERS: {
             LOW: { threshold: 90, rate: 0.03 },
@@ -61,11 +61,7 @@ const ExpertsModule = {
         const metrics = this.calculateMetrics(expertId, startDate, endDate);
         const sales = StorageModule.getExpertSalesByPeriod(expertId, startDate, endDate);
 
-        const disciplineDays = sales.filter(s => s.discipline).length;
-        const totalDays = sales.length || 1;
-        const disciplineBonus = (disciplineDays / totalDays) * this.SALARY_CONFIG.DISCIPLINE;
-
-        const baseFix = this.SALARY_CONFIG.HARD_SALARY + disciplineBonus;
+        const baseFix = this.SALARY_CONFIG.HARD_SALARY;
 
         const rate = this.getCommissionRate(parseFloat(metrics.planPercent));
         // Комиссия считается только от СУМОВОЙ выручки
@@ -78,7 +74,6 @@ const ExpertsModule = {
             expertId,
             expertName: expert.name,
             baseFix,
-            disciplineBonus,
             commission,
             commissionRate: rate,
             bestMonthBonus,
