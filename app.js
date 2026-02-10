@@ -113,11 +113,13 @@ function showMainApp() {
     initializeNavigation();
     initializeForms();
 
-    // Переключаемся на соответствующий вид в зависимости от роли
+    // Переключаемся на соответствующий раздел в зависимости от роли
     if (user && user.role === 'manager') {
         renderView('managers');
     } else if (user && user.role === 'expert') {
         renderView('experts');
+    } else if (user && user.role === 'marketer') {
+        renderView('marketing');
     } else {
         renderView('dashboard');
     }
@@ -135,6 +137,22 @@ function setupUIForRole(role) {
         if (nav) nav.style.display = 'flex';
         if (adminSelector) adminSelector.style.display = 'flex';
         updateAdminMonthPicker();
+    } else if (role === 'marketer') {
+        // Маркетолог видит навигацию, но мы можем ограничить видимые вкладки
+        if (nav) {
+            nav.style.display = 'flex';
+            // Скрываем все кнопки кроме Маркетинга и Дашборда (опционально)
+            const buttons = nav.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                const view = btn.dataset.view;
+                if (view !== 'marketing' && view !== 'dashboard') {
+                    btn.style.display = 'none';
+                } else {
+                    btn.style.display = 'flex';
+                }
+            });
+        }
+        if (adminSelector) adminSelector.style.display = 'none';
     } else {
         // Сотрудники не видят навигацию
         if (nav) nav.style.display = 'none';
@@ -297,9 +315,16 @@ function initializeNavigation() {
         btn.addEventListener('click', () => {
             // Проверяем права доступа
             const user = AuthModule.getCurrentUser();
+            const allowedViews = ['dashboard', 'marketing'];
+
             if (user && user.role !== 'admin') {
-                // Сотрудники не могут переключать виды
-                return;
+                // Если не админ, проверяем разрешен ли вид для этой роли
+                if (user.role === 'marketer') {
+                    if (!allowedViews.includes(btn.dataset.view)) return;
+                } else {
+                    // Менеджеры и эксперты вообще не должны видеть кликабельный нав
+                    return;
+                }
             }
 
             navButtons.forEach(b => b.classList.remove('active'));

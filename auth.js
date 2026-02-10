@@ -32,12 +32,11 @@ const AuthModule = {
      * Создание пользователей для всех менеджеров и экспертов
      */
     ensureUsersExist() {
-        let users = StorageModule.get(StorageModule.KEYS.USERS);
+        let users = StorageModule.get(StorageModule.KEYS.USERS) || [];
+        let modified = false;
 
-        if (!users || users.length === 0) {
-            users = [];
-
-            // Создаем админа
+        // Проверяем админа
+        if (!users.find(u => u.role === 'admin')) {
             users.push({
                 id: 'admin',
                 username: 'Администратор',
@@ -45,31 +44,31 @@ const AuthModule = {
                 role: 'admin',
                 linkedEntityId: null
             });
+            modified = true;
+        }
 
-            // Создаем пользователей для менеджеров
-            const managers = StorageModule.getManagers();
-            managers.forEach(manager => {
-                users.push({
-                    id: `user_${manager.id}`,
-                    username: manager.name,
-                    password: 'Qweqwe145',
-                    role: 'manager',
-                    linkedEntityId: manager.id
-                });
+        // Вспомогательная функция для добавления недостающих пользователей
+        const addMissingUsers = (entities, role) => {
+            entities.forEach(entity => {
+                const existingUser = users.find(u => u.linkedEntityId === entity.id && u.role === role);
+                if (!existingUser) {
+                    users.push({
+                        id: `user_${entity.id}`,
+                        username: entity.name,
+                        password: 'Qweqwe145',
+                        role: role,
+                        linkedEntityId: entity.id
+                    });
+                    modified = true;
+                }
             });
+        };
 
-            // Создаем пользователей для экспертов
-            const experts = StorageModule.getExperts();
-            experts.forEach(expert => {
-                users.push({
-                    id: `user_${expert.id}`,
-                    username: expert.name,
-                    password: 'Qweqwe145',
-                    role: 'expert',
-                    linkedEntityId: expert.id
-                });
-            });
+        addMissingUsers(StorageModule.getManagers(), 'manager');
+        addMissingUsers(StorageModule.getExperts(), 'expert');
+        addMissingUsers(StorageModule.getMarketers(), 'marketer');
 
+        if (modified || users.length === 0) {
             StorageModule.set(StorageModule.KEYS.USERS, users);
         }
     },
@@ -115,6 +114,13 @@ const AuthModule = {
      */
     isAdmin() {
         return this.currentSession && this.currentSession.role === 'admin';
+    },
+
+    /**
+     * Проверка, является ли пользователь маркетологом
+     */
+    isMarketer() {
+        return this.currentSession && this.currentSession.role === 'marketer';
     },
 
     /**
