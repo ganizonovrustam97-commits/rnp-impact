@@ -54,7 +54,7 @@ const ManagersModule = {
      * Рассчитать зарплату менеджера за период
      */
     calculateSalary(managerId, startDate, endDate) {
-        const manager = StorageModule.getManagers().find(m => m.id === managerId);
+        const manager = StorageModule.getManagers().find(m => m.id == managerId);
         if (!manager) return null;
 
         const reports = StorageModule.getManagerReportsByPeriod(managerId, startDate, endDate);
@@ -168,7 +168,7 @@ const ManagersModule = {
             }
         });
 
-        return bestManagerId === managerId;
+        return bestManagerId == managerId;
     },
 
     /**

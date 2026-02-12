@@ -425,7 +425,7 @@ function renderManagerInputTable() {
     // Фильтруем данные для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        managers = managers.filter(m => m.id === linkedId);
+        managers = managers.filter(m => m.id == linkedId);
     }
 
     container.innerHTML = `<div style="margin-bottom: 1rem; color: var(--accent-primary); font-size: 1.1rem; text-transform: capitalize; font-weight: bold;">${currentMonthName}</div>`;
@@ -491,7 +491,7 @@ function generateManagerRows(managerId, days, allReports) {
 
     for (let i = 1; i <= days; i++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        const r = allReports.find(report => report.managerId === managerId && report.date === dateStr) || {};
+        const r = allReports.find(report => report.managerId == managerId && report.date === dateStr) || {};
 
         // В архиве "сегодня" не подсвечиваем как активный день
         const isToday = !window.AppState.isArchiveMode && i === new Date().getDate() && month === new Date().getMonth();
@@ -543,7 +543,7 @@ window.saveCellManager = function (managerId, date, field, value) {
 
     // В архиве getManagerReports возвращает ссылку на данные внутри архива
     let reports = StorageModule.getManagerReports();
-    let index = reports.findIndex(r => r.managerId === managerId && r.date === date);
+    let index = reports.findIndex(r => r.managerId == managerId && r.date === date);
 
     if (index === -1) {
         const newR = {
@@ -589,7 +589,7 @@ function renderManagersView() {
     // Фильтруем статистику для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        stats = stats.filter(s => s.managerId === linkedId);
+        stats = stats.filter(s => s.managerId == linkedId);
     }
 
     const container = document.getElementById('manager-stats-container');
@@ -627,7 +627,7 @@ function renderManagerHistory() {
     // Фильтруем историю для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        reports = reports.filter(r => r.managerId === linkedId);
+        reports = reports.filter(r => r.managerId == linkedId);
     }
 
     reports = reports.slice(0, 20);
@@ -659,7 +659,7 @@ function renderExpertInputTable() {
     // Фильтруем данные для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        experts = experts.filter(e => e.id === linkedId);
+        experts = experts.filter(e => e.id == linkedId);
     }
 
     container.innerHTML = `<div style="margin-bottom: 1rem; color: var(--accent-primary); font-size: 1.1rem; text-transform: capitalize; font-weight: bold;">${currentMonthName}</div>`;
@@ -754,7 +754,7 @@ function generateExpertRows(expertId, days, allSales) {
 
     for (let i = 1; i <= days; i++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        const s = allSales.find(sale => sale.expertId === expertId && sale.date === dateStr) || {};
+        const s = allSales.find(sale => sale.expertId == expertId && sale.date === dateStr) || {};
 
         const isToday = !window.AppState.isArchiveMode && i === new Date().getDate() && month === new Date().getMonth();
         const rowStyle = isToday ? 'background: rgba(16, 185, 129, 0.1);' : '';
@@ -790,7 +790,7 @@ window.saveCellExpert = function (expertId, date, field, value) {
     if (window.AppState.isArchiveMode && !AuthModule.isAdmin()) return;
 
     let sales = StorageModule.getExpertSales();
-    let index = sales.findIndex(s => s.expertId === expertId && s.date === date);
+    let index = sales.findIndex(s => s.expertId == expertId && s.date === date);
 
     if (index === -1) {
         const newS = { expertId, date, conductedMeetings: 0, offers: 0, dealsCount: 0, amount: 0, amountUSD: 0, discipline: false };
@@ -818,7 +818,7 @@ function renderExpertsView() {
     // Фильтруем статистику для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        stats = stats.filter(s => s.expertId === linkedId);
+        stats = stats.filter(s => s.expertId == linkedId);
     }
 
     const container = document.getElementById('expert-stats-container');
@@ -858,7 +858,7 @@ function renderExpertHistory() {
     // Фильтруем историю для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        sales = sales.filter(s => s.expertId === linkedId);
+        sales = sales.filter(s => s.expertId == linkedId);
     }
 
     sales = sales.slice(0, 20);

@@ -16,7 +16,7 @@ const ExpertsModule = {
     },
 
     calculateMetrics(expertId, startDate, endDate) {
-        const expert = StorageModule.getExperts().find(e => e.id === expertId);
+        const expert = StorageModule.getExperts().find(e => e.id == expertId);
         if (!expert) return null;
 
         const sales = StorageModule.getExpertSalesByPeriod(expertId, startDate, endDate);
@@ -55,7 +55,7 @@ const ExpertsModule = {
     },
 
     calculateSalary(expertId, startDate, endDate) {
-        const expert = StorageModule.getExperts().find(e => e.id === expertId);
+        const expert = StorageModule.getExperts().find(e => e.id == expertId);
         if (!expert) return null;
 
         const metrics = this.calculateMetrics(expertId, startDate, endDate);
@@ -108,7 +108,7 @@ const ExpertsModule = {
                 bestExpertId = expert.id;
             }
         });
-        return bestExpertId === expertId && maxRevenue > 0;
+        return bestExpertId == expertId && maxRevenue > 0;
     },
 
     getAllExpertsStats(startDate, endDate) {
