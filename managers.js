@@ -85,7 +85,7 @@ const ManagersModule = {
             managerId,
             managerName: manager.name,
             baseFix,
-            disciplineBonus: !manager.promoted ? disciplineBonus : 0,
+            disciplineBonus: 0,
             pieceBonus,
             weeklyBonuses,
             bestMonthBonus,
