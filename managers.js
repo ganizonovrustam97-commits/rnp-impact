@@ -8,7 +8,7 @@ const ManagersModule = {
      * Константы для расчета ЗП
      */
     SALARY_CONFIG: {
-        HARD_SALARY: 1000000,           // Гарантированный оклад
+        HARD_SALARY: 2000000,           // Гарантированный оклад
         DISCIPLINE: 0,                  // Дисциплина убрана
         BONUS_PER_DONE: 100000,         // Бонус за 1 проведенное
         PENALTY_PER_DAY: 0,             // Штрафы убраны

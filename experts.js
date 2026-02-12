@@ -5,7 +5,7 @@
 
 const ExpertsModule = {
     SALARY_CONFIG: {
-        HARD_SALARY: 2000000,
+        HARD_SALARY: 3000000,
         DISCIPLINE: 0,
         BEST_MONTH_BONUS: 1000000,
         COMMISSION_TIERS: {
