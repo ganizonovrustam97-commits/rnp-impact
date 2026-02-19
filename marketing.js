@@ -14,8 +14,9 @@ const MarketingModule = {
 
         const mReport = marketingReports.find(r => r.date === date) || {};
 
-        // Назначения и КЭВ - сумма от всех менеджеров за этот день
-        const dayManagers = managerReports.filter(r => r.date === date);
+        // Назначения и КЭВ - сумма от всех РЕАЛЬНЫХ менеджеров за этот день
+        const validManagerIds = new Set(StorageModule.getManagers().map(m => String(m.id)));
+        const dayManagers = managerReports.filter(r => r.date === date && validManagerIds.has(String(r.managerId)));
         const appointments = dayManagers.reduce((sum, m) => sum + (parseInt(m.appointmentsSet) || 0), 0);
         const conducted = dayManagers.reduce((sum, m) => sum + (parseInt(m.appointmentsDone) || 0), 0);
 
