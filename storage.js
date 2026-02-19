@@ -23,6 +23,22 @@ const StorageModule = {
     // Флаг инициализации
     isListening: false,
 
+    // Флаг для подавления рендера после локальной записи (чтобы Firestore echo не перебивал ввод)
+    _suppressRender: false,
+    _suppressTimeout: null,
+
+    /**
+     * Подавить рендер от Firestore на указанное время (мс)
+     * Вызывать перед записью в облако
+     */
+    suppressRenderForMs(ms = 2000) {
+        this._suppressRender = true;
+        if (this._suppressTimeout) clearTimeout(this._suppressTimeout);
+        this._suppressTimeout = setTimeout(() => {
+            this._suppressRender = false;
+        }, ms);
+    },
+
     /**
      * Запуск прослушивания изменений из Облака
      */
@@ -59,14 +75,16 @@ const StorageModule = {
                 // но идеальна для текущего размера проекта)
                 this.saveToLocalCache(collectionName, data);
 
-                // Перерисовываем экран
-                if (window.renderView && window.AppState) {
+                // Перерисовываем экран (только если не подавлено после локальной записи)
+                if (window.renderView && window.AppState && !this._suppressRender) {
                     // Небольшая задержка чтобы не спамить рендерами при массовой загрузке
                     // (debounce)
                     if (this._renderTimeout) clearTimeout(this._renderTimeout);
                     this._renderTimeout = setTimeout(() => {
-                        window.renderView(window.AppState.currentView);
-                    }, 50);
+                        if (!this._suppressRender) {
+                            window.renderView(window.AppState.currentView);
+                        }
+                    }, 300);
                 }
             }, error => {
                 console.error(`Firestore error [${collectionName}]:`, error);
@@ -125,6 +143,9 @@ const StorageModule = {
         localStorage.setItem(mappedKey, JSON.stringify(value));
 
         let collectionName = mappedKey;
+
+        // Подавляем рендер после записи, чтобы Firestore echo не перезаписал вводимые данные
+        this.suppressRenderForMs(2500);
 
         // 2. Отправка в Firestore
         if (window.FirebaseConfig && window.FirebaseConfig.db) {

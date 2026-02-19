@@ -558,13 +558,50 @@ window.saveCellManager = function (managerId, date, field, value) {
     if (window.AppState.isArchiveMode) {
         // В режиме архива сохраняем через HistoryModule
         HistoryModule.saveArchiveChanges();
+        // В архиве тоже перерисовываем статистику
+        renderManagerStatsOnly();
     } else {
         StorageModule.set(StorageModule.KEYS.MANAGER_REPORTS, reports);
+        // Перерисовываем только статистику — таблицу НЕ трогаем (чтобы не сбросить ввод)
+        renderManagerStatsOnly();
+    }
+};
+
+/**
+ * Обновляет только блок статистики менеджеров (без пересоздания таблицы ввода)
+ */
+function renderManagerStatsOnly() {
+    const { startDate, endDate } = Utils.loadCurrentMonthData();
+    let stats = ManagersModule.getAllManagersStats(startDate, endDate);
+
+    if (!AuthModule.isAdmin()) {
+        const linkedId = AuthModule.getLinkedEntityId();
+        stats = stats.filter(s => s.managerId == linkedId);
     }
 
-    renderManagersView();
-    renderDashboard();
-};
+    const container = document.getElementById('manager-stats-container');
+    if (!container) return;
+
+    if (stats.length === 0) {
+        container.innerHTML = '<p class="text-muted">Нет данных за период</p>';
+    } else {
+        container.innerHTML = stats.map(stat => {
+            const salary = ManagersModule.calculateSalary(stat.managerId, startDate, endDate);
+            return `
+                <div class="card card-stats">
+                    <h3>${stat.managerName}</h3>
+                    <div class="stats-grid-small">
+                        <div><p class="label">План</p><p class="val">${stat.planPercent}%</p></div>
+                        <div><p class="label">Зв→Наз</p><p class="val">${stat.conversionCallsToSet}%</p></div>
+                        <div><p class="label">Наз→Пр</p><p class="val">${stat.conversionSetToDone}%</p></div>
+                        <div><p class="label">Зарплата</p><p class="val text-success">${formatCurrency(salary ? salary.totalSalary : 0)}</p></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    renderManagerHistory();
+}
 
 function renderManagersView() {
     renderManagerInputTable();
@@ -798,13 +835,58 @@ window.saveCellExpert = function (expertId, date, field, value) {
 
     if (window.AppState.isArchiveMode) {
         HistoryModule.saveArchiveChanges();
+        renderExpertStatsOnly();
     } else {
         StorageModule.set(StorageModule.KEYS.EXPERT_SALES, sales);
+        // Перерисовываем только статистику — таблицу НЕ трогаем (чтобы не сбросить ввод)
+        renderExpertStatsOnly();
+    }
+};
+
+/**
+ * Обновляет только блок статистики экспертов (без пересоздания таблицы ввода)
+ */
+function renderExpertStatsOnly() {
+    const { startDate, endDate } = Utils.loadCurrentMonthData();
+    let stats = ExpertsModule.getAllExpertsStats(startDate, endDate);
+
+    if (!AuthModule.isAdmin()) {
+        const linkedId = AuthModule.getLinkedEntityId();
+        const currentUser = AuthModule.getCurrentUser();
+        let filtered = stats.filter(s => s.expertId == linkedId);
+        if (filtered.length === 0 && currentUser) {
+            filtered = stats.filter(s => s.expertName === currentUser.username);
+        }
+        stats = filtered;
     }
 
-    renderExpertsView();
-    renderDashboard();
-};
+    const container = document.getElementById('expert-stats-container');
+    if (!container) return;
+
+    if (stats.length === 0) {
+        container.innerHTML = '<p class="text-muted">Нет данных за период</p>';
+    } else {
+        container.innerHTML = stats.map(stat => {
+            const salary = ExpertsModule.calculateSalary(stat.expertId, startDate, endDate);
+            return `
+                <div class="card card-stats">
+                    <h3>${stat.expertName}</h3>
+                    <div class="stats-grid-small">
+                        <div><p class="label">Выручка</p><p class="val">${formatCurrency(stat.totalRevenue)}</p></div>
+                        <div><p class="label">План</p><p class="val">${stat.planPercent}%</p></div>
+                        <div><p class="label">Пров→Офф</p><p class="val">${(stat.totalOffers / (stat.conductedMeetings || 1) * 100).toFixed(1)}%</p></div>
+                        <div><p class="label">Офф→Прд</p><p class="val">${(stat.totalDeals / (stat.totalOffers || 1) * 100).toFixed(1)}%</p></div>
+                        <div><p class="label">Комиссия (${(salary.commissionRate * 100).toFixed(0)}%)</p><p class="val">${formatCurrency(salary.commission)}</p></div>
+                        <div><p class="label">Фикс+Дисц</p><p class="val">${formatCurrency(salary.baseFix)}</p></div>
+                        <div><p class="label">Лучший месяца</p><p class="val">${formatCurrency(salary.bestMonthBonus)}</p></div>
+                        <div><p class="label">ИТОГО ЗП</p><p class="val text-success" style="font-size:1.1rem">${formatCurrency(salary.totalSalary)}</p></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    renderExpertHistory();
+}
 
 function renderExpertsView() {
     renderExpertInputTable();
