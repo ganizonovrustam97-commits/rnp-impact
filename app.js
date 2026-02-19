@@ -644,7 +644,18 @@ function renderExpertInputTable() {
     // Фильтруем данные для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        experts = experts.filter(e => e.id == linkedId);
+        const currentUser = AuthModule.getCurrentUser();
+        let filtered = experts.filter(e => e.id == linkedId);
+        // Fallback: если по ID не нашли — ищем по имени
+        if (filtered.length === 0 && currentUser) {
+            filtered = experts.filter(e => e.name === currentUser.username);
+            // Если нашли по имени — синхронизируем linkedEntityId в сессии
+            if (filtered.length > 0) {
+                const session = AuthModule.currentSession;
+                if (session) session.linkedEntityId = filtered[0].id;
+            }
+        }
+        experts = filtered;
     }
 
     container.innerHTML = `<div style="margin-bottom: 1rem; color: var(--accent-primary); font-size: 1.1rem; text-transform: capitalize; font-weight: bold;">${currentMonthName}</div>`;
@@ -803,7 +814,13 @@ function renderExpertsView() {
     // Фильтруем статистику для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        stats = stats.filter(s => s.expertId == linkedId);
+        const currentUser = AuthModule.getCurrentUser();
+        let filtered = stats.filter(s => s.expertId == linkedId);
+        // Fallback: если по ID не нашли — ищем по имени
+        if (filtered.length === 0 && currentUser) {
+            filtered = stats.filter(s => s.expertName === currentUser.username);
+        }
+        stats = filtered;
     }
 
     const container = document.getElementById('expert-stats-container');
@@ -843,7 +860,15 @@ function renderExpertHistory() {
     // Фильтруем историю для не-админов
     if (!AuthModule.isAdmin()) {
         const linkedId = AuthModule.getLinkedEntityId();
-        sales = sales.filter(s => s.expertId == linkedId);
+        const currentUser = AuthModule.getCurrentUser();
+        let filtered = sales.filter(s => s.expertId == linkedId);
+        // Fallback: если по ID не нашли — ищем по имени через список экспертов
+        if (filtered.length === 0 && currentUser) {
+            const allExperts = Utils.getAppData('experts');
+            const myExpert = allExperts.find(e => e.name === currentUser.username);
+            if (myExpert) filtered = sales.filter(s => s.expertId == myExpert.id);
+        }
+        sales = filtered;
     }
 
     sales = sales.slice(0, 20);
