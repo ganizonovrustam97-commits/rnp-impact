@@ -19,8 +19,11 @@ const MarketingModule = {
         const appointments = dayManagers.reduce((sum, m) => sum + (parseInt(m.appointmentsSet) || 0), 0);
         const conducted = dayManagers.reduce((sum, m) => sum + (parseInt(m.appointmentsDone) || 0), 0);
 
-        // Продажи, Выручка - сумма от всех экспертов за этот день
-        const dayExperts = expertSales.filter(e => e.date === date);
+        // Только реальные эксперты — отфильтровываем "призрачные" записи с невалидными expertId
+        const validExpertIds = new Set(StorageModule.getExperts().map(e => String(e.id)));
+
+        // Продажи, Выручка - сумма от всех РЕАЛЬНЫХ экспертов за этот день
+        const dayExperts = expertSales.filter(e => e.date === date && validExpertIds.has(String(e.expertId)));
         const sales = dayExperts.reduce((sum, e) => sum + (parseInt(e.dealsCount) || 0), 0);
         // Выручка в сумах (для зарплаты)
         const revenue = dayExperts.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
