@@ -138,7 +138,14 @@ const StorageModule = {
                         return true;
                     }
                     const promises = value.map(item => {
-                        const docId = String(item.id || item._docId || db.collection(collectionName).doc().id);
+                        let docId;
+                        if (collectionName === 'expertSales' && item.expertId && item.date) {
+                            docId = `${item.expertId}_${item.date}`;
+                        } else if (collectionName === 'managerReports' && item.managerId && item.date) {
+                            docId = `${item.managerId}_${item.date}`;
+                        } else {
+                            docId = String(item.id || item._docId || db.collection(collectionName).doc().id);
+                        }
                         const { _docId, ...dataToSave } = item;
                         return db.collection(collectionName).doc(docId).set(dataToSave, { merge: true });
                     });
@@ -215,15 +222,21 @@ const StorageModule = {
     getManagerReports() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.managerReports || [];
         const fromNew = this.get(this.KEYS.MANAGER_REPORTS);
-        if (fromNew && fromNew.length > 0) return fromNew;
-        return this.get('rnp_manager_reports') || [];
+        const raw = (fromNew && fromNew.length > 0) ? fromNew : (this.get('rnp_manager_reports') || []);
+        // Дедупликация: одна запись на managerId+date (последняя побеждает)
+        const map = new Map();
+        raw.forEach(r => map.set(`${r.managerId}_${r.date}`, r));
+        return Array.from(map.values());
     },
 
     getExpertSales() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.expertSales || [];
         const fromNew = this.get(this.KEYS.EXPERT_SALES);
-        if (fromNew && fromNew.length > 0) return fromNew;
-        return this.get('rnp_expert_sales') || [];
+        const raw = (fromNew && fromNew.length > 0) ? fromNew : (this.get('rnp_expert_sales') || []);
+        // Дедупликация: одна запись на expertId+date (последняя побеждает)
+        const map = new Map();
+        raw.forEach(s => map.set(`${s.expertId}_${s.date}`, s));
+        return Array.from(map.values());
     },
 
     getMarketingReports() {
