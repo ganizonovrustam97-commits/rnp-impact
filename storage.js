@@ -143,6 +143,9 @@ const StorageModule = {
                             docId = `${item.expertId}_${item.date}`;
                         } else if (collectionName === 'managerReports' && item.managerId && item.date) {
                             docId = `${item.managerId}_${item.date}`;
+                        } else if (collectionName === 'marketingReports' && item.date) {
+                            // Маркетинг: одна запись на дату
+                            docId = `marketing_${item.date}`;
                         } else {
                             docId = String(item.id || item._docId || db.collection(collectionName).doc().id);
                         }
@@ -242,8 +245,11 @@ const StorageModule = {
     getMarketingReports() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.marketingReports || [];
         const fromNew = this.get(this.KEYS.MARKETING_REPORTS);
-        if (fromNew && fromNew.length > 0) return fromNew;
-        return this.get('rnp_marketing_reports') || [];
+        const raw = (fromNew && fromNew.length > 0) ? fromNew : (this.get('rnp_marketing_reports') || []);
+        // Дедупликация: одна запись на дату (последняя побеждает)
+        const map = new Map();
+        raw.forEach(r => map.set(r.date, r));
+        return Array.from(map.values());
     },
 
     getHistory() {
