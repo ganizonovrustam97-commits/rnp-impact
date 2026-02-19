@@ -16,22 +16,7 @@ window.AppState = {
     openSections: {}
 };
 
-// ДИАГНОСТИКА ХРАНИЛИЩА (ВРЕМЕННО)
-setTimeout(() => {
-    try {
-        const m = JSON.parse(localStorage.getItem('rnp_manager_reports') || '[]');
-        const e = JSON.parse(localStorage.getItem('rnp_expert_sales') || '[]');
-        const h = JSON.parse(localStorage.getItem('rnp_history') || '[]');
-        const msg = `Диагностика:\nОтчетов менеджеров: ${m.length}\nПродаж экспертов: ${e.length}\nАрхивов: ${h.length}`;
-        console.log(msg);
-        alert(msg);
 
-        if (m.length > 0) console.log('First report date:', m[0].date);
-        if (e.length > 0) console.log('First sale date:', e[0].date);
-    } catch (err) {
-        alert('Ошибка чтения Storage: ' + err.message);
-    }
-}, 1000);
 
 /**
  * Инициализация приложения
@@ -639,7 +624,7 @@ function renderManagerHistory() {
     }
 
     tbody.innerHTML = reports.map(r => {
-        const m = managers.find(man => man.id === r.managerId);
+        const m = managers.find(man => man.id == r.managerId);
         return `<tr><td>${formatDate(r.date)}</td><td>${m ? m.name : '?'}</td><td>${r.callsTotal}</td><td>${r.callsQuality || 0}</td><td>${r.appointmentsSet}</td><td>${r.appointmentsDone}</td></tr>`;
     }).join('');
 }
@@ -1396,7 +1381,7 @@ window.handleAddMarketer = function (e) {
 
 window.updateManagerPlan = function (id, val) {
     const managers = StorageModule.getManagers();
-    const i = managers.findIndex(m => m.id === id);
+    const i = managers.findIndex(m => m.id == id);
     if (i !== -1) {
         managers[i].monthPlan = Utils.validatePositiveNumber(val);
         StorageModule.set(StorageModule.KEYS.MANAGERS, managers);
@@ -1406,7 +1391,7 @@ window.updateManagerPlan = function (id, val) {
 
 window.updateExpertPlan = function (id, val) {
     const experts = StorageModule.getExperts();
-    const i = experts.findIndex(e => e.id === id);
+    const i = experts.findIndex(e => e.id == id);
     if (i !== -1) {
         experts[i].monthPlan = Utils.validatePositiveNumber(val);
         StorageModule.set(StorageModule.KEYS.EXPERTS, experts);

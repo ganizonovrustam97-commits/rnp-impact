@@ -47,19 +47,32 @@ const AuthModule = {
             modified = true;
         }
 
-        // Вспомогательная функция для добавления недостающих пользователей
+        // Вспомогательная функция для добавления/исправления пользователей
         const addMissingUsers = (entities, role) => {
             entities.forEach(entity => {
-                const existingUser = users.find(u => u.linkedEntityId === entity.id && u.role === role);
-                if (!existingUser) {
-                    users.push({
-                        id: `user_${entity.id}`,
-                        username: entity.name,
-                        password: 'Qweqwe145',
-                        role: role,
-                        linkedEntityId: entity.id
-                    });
-                    modified = true;
+                // Ищем пользователя с правильной ролью и linkedEntityId
+                const correctUser = users.find(u => u.linkedEntityId == entity.id && u.role === role);
+                if (!correctUser) {
+                    // Ищем пользователя с таким же именем, но неправильной ролью
+                    const wrongUser = users.find(u => u.username === entity.name && u.role !== role && u.role !== 'admin');
+                    if (wrongUser) {
+                        // Исправляем роль и привязку
+                        wrongUser.role = role;
+                        wrongUser.linkedEntityId = entity.id;
+                        wrongUser.id = `user_${entity.id}`;
+                        modified = true;
+                        console.log(`Fixed role for "${entity.name}": now ${role}`);
+                    } else {
+                        // Создаём нового пользователя
+                        users.push({
+                            id: `user_${entity.id}`,
+                            username: entity.name,
+                            password: 'Qweqwe145',
+                            role: role,
+                            linkedEntityId: entity.id
+                        });
+                        modified = true;
+                    }
                 }
             });
         };
@@ -136,7 +149,7 @@ const AuthModule = {
     canEdit(entityId) {
         if (!this.currentSession) return false;
         if (this.isAdmin()) return true;
-        return this.currentSession.linkedEntityId === entityId;
+        return this.currentSession.linkedEntityId == entityId;
     },
 
     /**
@@ -162,7 +175,7 @@ const AuthModule = {
         }
 
         const users = StorageModule.get(StorageModule.KEYS.USERS) || [];
-        const userIndex = users.findIndex(u => u.id === userId);
+        const userIndex = users.findIndex(u => u.id == userId);
 
         if (userIndex === -1) {
             return { success: false, error: 'Пользователь не найден' };

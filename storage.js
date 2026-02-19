@@ -193,31 +193,43 @@ const StorageModule = {
 
     getManagers() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.managers || [];
+        const fromNew = this.get(this.KEYS.MANAGERS);
+        if (fromNew && fromNew.length > 0) return fromNew;
         return this.get('rnp_managers') || [];
     },
 
     getExperts() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.experts || [];
+        const fromNew = this.get(this.KEYS.EXPERTS);
+        if (fromNew && fromNew.length > 0) return fromNew;
         return this.get('rnp_experts') || [];
     },
 
     getMarketers() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.marketers || [];
+        const fromNew = this.get(this.KEYS.MARKETERS);
+        if (fromNew && fromNew.length > 0) return fromNew;
         return this.get('rnp_marketers') || [];
     },
 
     getManagerReports() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.managerReports || [];
+        const fromNew = this.get(this.KEYS.MANAGER_REPORTS);
+        if (fromNew && fromNew.length > 0) return fromNew;
         return this.get('rnp_manager_reports') || [];
     },
 
     getExpertSales() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.expertSales || [];
+        const fromNew = this.get(this.KEYS.EXPERT_SALES);
+        if (fromNew && fromNew.length > 0) return fromNew;
         return this.get('rnp_expert_sales') || [];
     },
 
     getMarketingReports() {
         if (window.AppState?.isArchiveMode && window.AppState.archiveData) return window.AppState.archiveData.marketingReports || [];
+        const fromNew = this.get(this.KEYS.MARKETING_REPORTS);
+        if (fromNew && fromNew.length > 0) return fromNew;
         return this.get('rnp_marketing_reports') || [];
     },
 
@@ -374,13 +386,13 @@ const StorageModule = {
     getManagerReportsByPeriod(managerId, startDate, endDate) {
         return this.getManagerReports().filter(r => {
             const d = new Date(r.date);
-            return r.managerId === managerId && d >= new Date(startDate) && d <= new Date(endDate);
+            return r.managerId == managerId && d >= new Date(startDate) && d <= new Date(endDate);
         });
     },
     getExpertSalesByPeriod(expertId, startDate, endDate) {
         return this.getExpertSales().filter(s => {
             const d = new Date(s.date);
-            return s.expertId === expertId && d >= new Date(startDate) && d <= new Date(endDate);
+            return s.expertId == expertId && d >= new Date(startDate) && d <= new Date(endDate);
         });
     },
     getMarketingReportsByPeriod(startDate, endDate) {
