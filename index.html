@@ -1,533 +1,123 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РНП Impact - BI Система Payroll</title>
-    <meta name="description" content="Система отчетности и автоматизации расчета заработной платы">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Impact Factory — внедрение ИИ-ботов в бизнес</title>
+  <meta name="description" content="Аудит, план внедрения и запуск ИИ-ботов (OpenAI, Claude, Perplexity, Grok, Open CLaW) с расчетом ROI и роста производительности.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <!-- Login Screen -->
-    <div id="login-screen" class="login-screen">
-        <div class="login-container">
-            <div class="login-header">
-                <div class="logo-icon" style="font-size: 3rem;">📊</div>
-                <h1>РНП Impact</h1>
-                <p class="subtitle">Система управления Payroll</p>
-            </div>
-            <form id="login-form" class="login-form">
-                <div class="form-group">
-                    <label for="login-username">Имя пользователя</label>
-                    <input type="text" id="login-username" required autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Пароль</label>
-                    <input type="password" id="login-password" required autocomplete="current-password">
-                </div>
-                <div id="login-error" class="login-error" style="display: none;"></div>
-                <button type="submit" class="btn btn-success" style="width: 100%;">Войти</button>
-            </form>
+  <header class="topbar container">
+    <a class="brand" href="#">AI Impact Factory</a>
+    <nav>
+      <a href="#lineup">Продукты</a>
+      <a href="#framework">Внедрение</a>
+      <a href="#results">Эффект</a>
+    </nav>
+    <a class="btn btn-dark" href="#">Запросить аудит</a>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <p class="kicker">Расширенная продуктовая линейка</p>
+      <h1>Внедряем ИИ-ботов в бизнес и считаем реальную экономику</h1>
+      <p class="sub">Работаем с OpenAI (ChatGPT), Claude, Perplexity, Grok и Open CLaW: от аудита текущих процессов до плана внедрения и замера прироста качества, скорости и экономии.</p>
+      <div class="hero-actions">
+        <a class="btn btn-dark" href="#framework">Как внедряем</a>
+        <a class="btn btn-light" href="#results">Какой результат</a>
+      </div>
+      <div class="proof">
+        <div><strong>Аудит за 7–10 дней</strong><span>карта узких мест и AI-возможностей</span></div>
+        <div><strong>Пилот за 2–4 недели</strong><span>быстрый запуск на приоритетном процессе</span></div>
+        <div><strong>ROI-модель</strong><span>прозрачная экономика до масштабирования</span></div>
+      </div>
+    </section>
+
+    <section id="lineup" class="section section-soft">
+      <div class="container">
+        <p class="section-label">Продуктовая линейка</p>
+        <h2>Подбираем стек ИИ-ботов под задачи бизнеса, а не наоборот</h2>
+        <p class="section-text">Комбинируем инструменты по роли: поиск и исследование, клиентская коммуникация, поддержка продаж, аналитика, внутренние ассистенты для команд.</p>
+
+        <div class="stack-list">
+          <div class="stack-item">ChatGPT / OpenAI — универсальные бизнес-ассистенты и автоматизация рутин</div>
+          <div class="stack-item">Claude — длинные контексты, работа с документами и регламентами</div>
+          <div class="stack-item">Perplexity — быстрый ресерч и проверяемые источники</div>
+          <div class="stack-item">Grok — оперативная аналитика и генерация гипотез</div>
+          <div class="stack-item">Open CLaW — кастомные сценарии и orchestration-подход</div>
         </div>
+      </div>
+    </section>
+
+    <section id="framework" class="section container cards-grid">
+      <article class="role-card">
+        <p class="num">01</p>
+        <h3>Аудит текущей ситуации</h3>
+        <p>Диагностируем процессы, где теряется время и качество: продажи, маркетинг, support, back-office, обучение.</p>
+        <ul>
+          <li>Карта процессов «как есть»</li>
+          <li>Стоимость ручных операций</li>
+          <li>Приоритеты автоматизации</li>
+        </ul>
+      </article>
+
+      <article class="role-card">
+        <p class="num">02</p>
+        <h3>План внедрения</h3>
+        <p>Формируем roadmap: какие боты, где запускать, какие интеграции нужны и кто отвечает за результат.</p>
+        <ul>
+          <li>Поэтапный rollout</li>
+          <li>Архитектура и роли</li>
+          <li>План change-management</li>
+        </ul>
+      </article>
+
+      <article class="role-card">
+        <p class="num">03</p>
+        <h3>Рост качества и производительности</h3>
+        <p>Измеряем, насколько улучшаются SLA, скорость ответа, конверсия, точность, стабильность и загрузка команды.</p>
+        <ul>
+          <li>До/после по KPI</li>
+          <li>Скорость выполнения задач</li>
+          <li>Снижение ошибок и потерь</li>
+        </ul>
+      </article>
+
+      <article class="role-card">
+        <p class="num">04</p>
+        <h3>Экономический эффект</h3>
+        <p>Считаем экономию и окупаемость: стоимость часа команды, сокращение цикла работ, влияние на выручку и маржу.</p>
+        <ul>
+          <li>Финмодель и ROI</li>
+          <li>План масштабирования</li>
+          <li>Контроль фактической экономии</li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="results" class="section container result">
+      <div>
+        <p class="section-label">Что получает бизнес</p>
+        <h2>Не просто «AI ради AI», а управляемая система улучшений</h2>
+      </div>
+      <div class="result-list">
+        <div class="result-item">Прозрачный аудит с приоритизацией зон внедрения</div>
+        <div class="result-item">Практический roadmap запуска по отделам</div>
+        <div class="result-item">Метрика повышения качества и производительности</div>
+        <div class="result-item">Подтвержденная оценка экономии и ROI</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>AI Impact Factory © 2026</p>
+      <a class="btn btn-dark" href="#">Оставить заявку</a>
     </div>
-
-    <!-- Main Application (hidden until login) -->
-    <div id="main-app" style="display: none;">
-        <!-- Header Navigation -->
-        <header class="header">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">
-                        <div class="logo-icon">📊</div>
-                        <h1>РНП Impact</h1>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div id="admin-month-selector"
-                            style="display: none; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--border-color);">
-                            <span style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap;">📅
-                                Период:</span>
-                            <input type="month" id="admin-date-input" class="table-input"
-                                style="width: auto; height: 32px; padding: 2px 8px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold; cursor: pointer;">
-                        </div>
-                        <span id="current-user-name" style="color: var(--text-muted); font-size: 0.9rem;"></span>
-                        <button id="logout-btn" class="btn" style="padding: 0.5rem 1rem;">Выход</button>
-                    </div>
-                    <nav class="nav" id="main-nav">
-                        <button class="nav-btn active" data-view="dashboard">
-                            <span class="icon">📈</span>
-                            Дашборд
-                        </button>
-                        <button class="nav-btn" data-view="marketing">
-                            <span class="icon">🎯</span>
-                            Маркетинг
-                        </button>
-                        <button class="nav-btn" data-view="managers">
-                            <span class="icon">📞</span>
-                            Менеджеры SDR
-                        </button>
-                        <button class="nav-btn" data-view="experts">
-                            <span class="icon">💼</span>
-                            Эксперты
-                        </button>
-                        <button class="nav-btn" data-view="history">
-                            <span class="icon">📜</span>
-                            История
-                        </button>
-                        <button class="nav-btn" data-view="settings">
-                            <span class="icon">⚙️</span>
-                            Настройки
-                        </button>
-                    </nav>
-                </div>
-            </div>
-        </header>
-
-        <main class="main">
-            <div class="container">
-                <!-- Dashboard View -->
-                <section id="dashboard-view" class="view active">
-                    <div class="view-header">
-                        <h2>Сводный Дашборд</h2>
-                        <p class="subtitle">Общая статистика команды за текущий месяц</p>
-                    </div>
-
-                    <!-- Summary Cards -->
-                    <div class="cards-grid">
-                        <div class="card card-primary">
-                            <div class="card-icon">📞</div>
-                            <div class="card-content">
-                                <h3>Время на линии (мин)</h3>
-                                <p class="card-value" id="total-calls">0</p>
-                                <span class="card-label">за месяц</span>
-                            </div>
-                        </div>
-
-                        <div class="card card-success">
-                            <div class="card-icon">✅</div>
-                            <div class="card-content">
-                                <h3>Проведено КЭВ</h3>
-                                <p class="card-value" id="total-done">0</p>
-                                <span class="card-label">назначений</span>
-                            </div>
-                        </div>
-
-                        <div class="card card-warning">
-                            <div class="card-icon">💰</div>
-                            <div class="card-content">
-                                <h3>Общая выручка</h3>
-                                <p class="card-value" id="total-revenue">0</p>
-                                <span class="card-label">сум</span>
-                            </div>
-                        </div>
-
-                        <div class="card card-info">
-                            <div class="card-icon">📊</div>
-                            <div class="card-content">
-                                <h3>% Плана</h3>
-                                <p class="card-value" id="plan-percent">0%</p>
-                                <span class="card-label">выполнение</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Team Rankings -->
-                    <div class="section">
-                        <h3 class="section-title">🏆 Рейтинг менеджеров SDR</h3>
-                        <div class="table-container">
-                            <table class="data-table" id="managers-ranking">
-                                <thead>
-                                    <tr>
-                                        <th>Место</th>
-                                        <th>Менеджер</th>
-                                        <th>Проведено</th>
-                                        <th>% Плана</th>
-                                        <th>Конверсия</th>
-                                        <th>ЗП (текущая)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="no-data">
-                                        <td colspan="6">Нет данных</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h3 class="section-title">💼 Рейтинг экспертов</h3>
-                        <div class="table-container">
-                            <table class="data-table" id="experts-ranking">
-                                <thead>
-                                    <tr>
-                                        <th>Место</th>
-                                        <th>Пров.</th>
-                                        <th>Оффер</th>
-                                        <th>Прод.</th>
-                                        <th>Выручка</th>
-                                        <th>% Плана</th>
-                                        <th>Конверсия</th>
-                                        <th>ЗП (текущая)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="no-data">
-                                        <td colspan="7">Нет данных</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Marketing View -->
-                <section id="marketing-view" class="view">
-                    <div class="view-header">
-                        <h2>Маркетинговая воронка</h2>
-                        <p class="subtitle">Анализ эффективности рекламы и конверсий</p>
-                    </div>
-
-                    <!-- Decomposition Section -->
-                    <div class="section" id="decomposition-section">
-                        <h3 class="section-title">📊 Декомпозиция целей и бюджет (План)</h3>
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Показатель</th>
-                                        <th>План (Ввод)</th>
-                                        <th>Расчет (Требуется)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Целевая выручка ($)</td>
-                                        <td><input type="number" id="decomp-revenue" class="table-input" step="100"
-                                                placeholder="0"></td>
-                                        <td><strong id="res-revenue">$0</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Средний чек ($)</td>
-                                        <td><input type="number" id="decomp-avg-ticket" class="table-input" step="10"
-                                                placeholder="0"></td>
-                                        <td><strong id="res-sales">0 продаж</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Конверсия Оффер → Прод (%)</td>
-                                        <td><input type="number" id="decomp-cr-sale" class="table-input" step="0.1"
-                                                placeholder="0"></td>
-                                        <td><strong id="res-offers">0 офферов</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Конверсия КЭВ → Оффер (%)</td>
-                                        <td><input type="number" id="decomp-cr-offer" class="table-input" step="0.1"
-                                                placeholder="0"></td>
-                                        <td><strong id="res-conducted">0 КЭВ</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Конверсия Лид → КЭВ (%)</td>
-                                        <td><input type="number" id="decomp-cr-lead" class="table-input" step="0.1"
-                                                placeholder="0"></td>
-                                        <td><strong id="res-leads">0 лидов</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Цена лида CPL ($)</td>
-                                        <td><input type="number" id="decomp-cpl" class="table-input" step="0.01"
-                                                placeholder="0"></td>
-                                        <td><strong id="res-budget">$0 бюджет</strong></td>
-                                    </tr>
-                                    <tr style="background: rgba(16,185,129,0.1)">
-                                        <td><strong>ОЖИДАЕМЫЙ ROI</strong></td>
-                                        <td colspan="2"><strong id="res-roi"
-                                                style="font-size: 1.2rem; color: var(--accent-success)">0%</strong></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                                <button class="btn btn-primary" onclick="window.saveDecomposition()">💾 Сохранить
-                                    план</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Marketing Cards -->
-                    <div class="cards-grid" id="marketing-cards-container">
-                        <!-- Будет заполнено JS: ROMI, CPL, CAC, ROMI -->
-                    </div>
-
-                    <!-- Marketing Input Section -->
-                    <div class="section">
-                        <h3 class="section-title">📅 Ежедневные показатели маркетинга</h3>
-                        <div id="marketing-monthly-input" class="table-container">
-                            <p class="text-muted">Загрузка данных...</p>
-                        </div>
-                    </div>
-
-                    <!-- Marketing Specialists Salary -->
-                    <div class="section">
-                        <h3 class="section-title">💰 Зарплаты маркетологов (Target)</h3>
-                        <div class="table-container">
-                            <table class="data-table" id="marketers-salary-table">
-                                <thead>
-                                    <tr>
-                                        <th>Маркетолог</th>
-                                        <th>Фикса ($)</th>
-                                        <th>ROI (%)</th>
-                                        <th>Бюджет ($)</th>
-                                        <th>% Бонуса</th>
-                                        <th>Бонус ($)</th>
-                                        <th>ИТОГО ЗП ($)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="no-data">
-                                        <td colspan="7">Нет данных</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Managers View -->
-                <section id="managers-view" class="view">
-                    <div class="view-header">
-                        <h2>Менеджеры по назначениям (SDR)</h2>
-                        <p class="subtitle">Ввод ежедневных отчетов и расчет заработной платы</p>
-                    </div>
-
-                    <!-- Daily Input Section -->
-                    <div class="section">
-                        <h3 class="section-title">� Ежемесячный табель (Все дни)</h3>
-                        <div id="managers-monthly-input" class="table-container">
-                            <!-- JS будет рендерить сюда аккордеоны -->
-                            <p class="text-muted">Загрузка табеля...</p>
-                        </div>
-                    </div>
-
-                    <!-- Manager Stats -->
-                    <div class="section">
-                        <h3 class="section-title">📊 Статистика менеджеров</h3>
-                        <div id="manager-stats-container"></div>
-                    </div>
-
-                    <!-- Manager History -->
-                    <div class="section">
-                        <h3 class="section-title">📜 История отчетов</h3>
-                        <div class="table-container">
-                            <table class="data-table" id="manager-history-table">
-                                <thead>
-                                    <tr>
-                                        <th>Дата</th>
-                                        <th>Менеджер</th>
-                                        <th>Звонки</th>
-                                        <th>Время (мин)</th>
-                                        <th>Назначено</th>
-                                        <th>Проведено</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Experts View -->
-                <section id="experts-view" class="view">
-                    <div class="view-header">
-                        <h2>Эксперты по продажам (Closers)</h2>
-                        <p class="subtitle">Ввод данных продаж и расчет заработной платы</p>
-                    </div>
-
-                    <!-- Input Section -->
-                    <div class="section">
-                        <h3 class="section-title">🗓️ Ежемесячный табель продаж</h3>
-                        <div id="experts-monthly-input" class="table-container">
-                            <!-- JS будет рендерить сюда аккордеоны -->
-                            <p class="text-muted">Загрузка табеля...</p>
-                        </div>
-                    </div>
-
-                    <!-- Expert Stats -->
-                    <div class="section">
-                        <h3 class="section-title">📊 Статистика экспертов</h3>
-                        <div id="expert-stats-container"></div>
-                    </div>
-
-                    <!-- Expert History -->
-                    <div class="section">
-                        <h3 class="section-title">📜 История продаж</h3>
-                        <div class="table-container">
-                            <table class="data-table" id="expert-history-table">
-                                <thead>
-                                    <tr>
-                                        <th>Дата</th>
-                                        <th>Эксперт</th>
-                                        <th>Оффер</th>
-                                        <th>Выручка (сум)</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- History View -->
-                <section id="history-view" class="view">
-                    <div class="view-header">
-                        <h2>Архив по месяцам</h2>
-                        <p class="subtitle">История показателей и начислений</p>
-                    </div>
-
-                    <div id="history-list" class="history-grid">
-                        <!-- History Month Cards -->
-                        <div class="no-data">Записей в архиве пока нет</div>
-                    </div>
-                </section>
-
-                <!-- Settings View -->
-                <section id="settings-view" class="view">
-                    <div class="view-header">
-                        <h2>Настройки системы</h2>
-                        <p class="subtitle">Управление сотрудниками и планами продаж</p>
-                    </div>
-
-                    <div class="settings-grid">
-                        <!-- Add Manager -->
-                        <div class="section">
-                            <h3 class="section-title">👤 Добавить менеджера SDR</h3>
-                            <form id="add-manager-form" class="input-form">
-                                <div class="form-group">
-                                    <label for="new-manager-name">Имя менеджера</label>
-                                    <input type="text" id="new-manager-name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="manager-hire-date">Дата приема на работу</label>
-                                    <input type="date" id="manager-hire-date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="manager-plan">План (Проведено)</label>
-                                    <input type="number" id="manager-plan" min="0" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Добавить</button>
-                            </form>
-                        </div>
-
-                        <!-- Add Expert -->
-                        <div class="section">
-                            <h3 class="section-title">👤 Добавить эксперта</h3>
-                            <form id="add-expert-form" class="input-form">
-                                <div class="form-group">
-                                    <label for="new-expert-name">Имя эксперта</label>
-                                    <input type="text" id="new-expert-name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="expert-plan">План месяца (сум)</label>
-                                    <input type="number" id="expert-plan" min="0" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Добавить</button>
-                            </form>
-                        </div>
-
-                        <!-- Add Marketer -->
-                        <div class="section">
-                            <h3 class="section-title">🎯 Добавить маркетолога</h3>
-                            <form id="add-marketer-form" class="input-form">
-                                <div class="form-group">
-                                    <label for="new-marketer-name">Имя маркетолога</label>
-                                    <input type="text" id="new-marketer-name" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Добавить</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Current Users -->
-                    <div class="section">
-                        <h3 class="section-title">📋 Текущие сотрудники</h3>
-                        <div class="users-container">
-                            <div class="user-list">
-                                <h4>Менеджеры SDR</h4>
-                                <ul id="managers-list"></ul>
-                            </div>
-                            <div class="user-list">
-                                <h4>Эксперты</h4>
-                                <ul id="experts-list"></ul>
-                            </div>
-                            <div class="user-list">
-                                <h4>Маркетологи</h4>
-                                <ul id="marketers-list"></ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Data Management -->
-                    <div class="section">
-                        <h3 class="section-title">🔒 Управление данными</h3>
-                        <div class="settings-actions">
-                            <button class="btn btn-warning" id="archive-month-btn">
-                                📁 Закрыть текущий месяц (в архив)
-                            </button>
-                            <button class="btn btn-danger" id="clear-all-btn">
-                                🗑️ Очистить все данные (сброс)
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-    </div> <!-- End of main-app -->
-
-    <!-- Edit Employee Modal -->
-    <div id="edit-user-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h3 id="edit-modal-title">Редактировать сотрудника</h3>
-            <form id="edit-user-form">
-                <input type="hidden" id="edit-user-id">
-                <input type="hidden" id="edit-user-type">
-                <div class="form-group">
-                    <label for="edit-user-name">Имя:</label>
-                    <input type="text" id="edit-user-name" required class="table-input" style="width: 100%;">
-                </div>
-                <div class="form-group">
-                    <label for="edit-user-plan">Месячный план:</label>
-                    <input type="number" id="edit-user-plan" required class="table-input" style="width: 100%;">
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.closeEditModal()"
-                        style="flex: 1;">Отмена</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 РНП Impact. Система автоматизации Payroll.</p>
-        </div>
-    </footer>
-
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-    <!-- Project Scripts -->
-    <script src="firebase-config.js"></script>
-    <script src="storage.js"></script>
-    <script src="utils.js"></script>
-    <script src="auth.js"></script>
-    <script src="marketing.js"></script>
-    <script src="marketers.js"></script>
-    <script src="decomposition.js"></script>
-    <script src="managers.js"></script>
-    <script src="experts.js"></script>
-    <script src="history.js"></script>
-    <script src="app.js"></script>
+  </footer>
 </body>
-
 </html>
